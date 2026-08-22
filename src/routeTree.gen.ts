@@ -28,6 +28,7 @@ import { Route as FrameworksFrameworkIdRouteImport } from './routes/frameworks.$
 import { Route as PoliciesPolicyIdRouteImport } from './routes/policies.$policyId'
 import { Route as RequirementsRequirementIdRouteImport } from './routes/requirements.$requirementId'
 import { Route as RisksRiskIdRouteImport } from './routes/risks.$riskId'
+import { Route as AssessmentsAssessmentIdIndexRouteImport } from './routes/assessments.$assessmentId.index'
 import { Route as AssessmentsAssessmentIdRunRouteImport } from './routes/assessments.$assessmentId.run'
 
 const IndexRoute = IndexRouteImport.update({
@@ -126,6 +127,12 @@ const RisksRiskIdRoute = RisksRiskIdRouteImport.update({
   path: '/$riskId',
   getParentRoute: () => RisksRoute,
 } as any)
+const AssessmentsAssessmentIdIndexRoute =
+  AssessmentsAssessmentIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AssessmentsAssessmentIdRoute,
+  } as any)
 const AssessmentsAssessmentIdRunRoute =
   AssessmentsAssessmentIdRunRouteImport.update({
     id: '/run',
@@ -154,6 +161,7 @@ export interface FileRoutesByFullPath {
   '/requirements/$requirementId': typeof RequirementsRequirementIdRoute
   '/risks/$riskId': typeof RisksRiskIdRoute
   '/assessments/$assessmentId/run': typeof AssessmentsAssessmentIdRunRoute
+  '/assessments/$assessmentId/': typeof AssessmentsAssessmentIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -169,13 +177,13 @@ export interface FileRoutesByTo {
   '/risks': typeof RisksRouteWithChildren
   '/stage-gate': typeof StageGateRoute
   '/trace': typeof TraceRoute
-  '/assessments/$assessmentId': typeof AssessmentsAssessmentIdRouteWithChildren
   '/assessments/new': typeof AssessmentsNewRoute
   '/frameworks/$frameworkId': typeof FrameworksFrameworkIdRoute
   '/policies/$policyId': typeof PoliciesPolicyIdRoute
   '/requirements/$requirementId': typeof RequirementsRequirementIdRoute
   '/risks/$riskId': typeof RisksRiskIdRoute
   '/assessments/$assessmentId/run': typeof AssessmentsAssessmentIdRunRoute
+  '/assessments/$assessmentId': typeof AssessmentsAssessmentIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -199,6 +207,7 @@ export interface FileRoutesById {
   '/requirements/$requirementId': typeof RequirementsRequirementIdRoute
   '/risks/$riskId': typeof RisksRiskIdRoute
   '/assessments/$assessmentId/run': typeof AssessmentsAssessmentIdRunRoute
+  '/assessments/$assessmentId/': typeof AssessmentsAssessmentIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -223,6 +232,7 @@ export interface FileRouteTypes {
     | '/requirements/$requirementId'
     | '/risks/$riskId'
     | '/assessments/$assessmentId/run'
+    | '/assessments/$assessmentId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -238,13 +248,13 @@ export interface FileRouteTypes {
     | '/risks'
     | '/stage-gate'
     | '/trace'
-    | '/assessments/$assessmentId'
     | '/assessments/new'
     | '/frameworks/$frameworkId'
     | '/policies/$policyId'
     | '/requirements/$requirementId'
     | '/risks/$riskId'
     | '/assessments/$assessmentId/run'
+    | '/assessments/$assessmentId'
   id:
     | '__root__'
     | '/'
@@ -267,6 +277,7 @@ export interface FileRouteTypes {
     | '/requirements/$requirementId'
     | '/risks/$riskId'
     | '/assessments/$assessmentId/run'
+    | '/assessments/$assessmentId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -423,6 +434,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RisksRiskIdRouteImport
       parentRoute: typeof RisksRoute
     }
+    '/assessments/$assessmentId/': {
+      id: '/assessments/$assessmentId/'
+      path: '/'
+      fullPath: '/assessments/$assessmentId/'
+      preLoaderRoute: typeof AssessmentsAssessmentIdIndexRouteImport
+      parentRoute: typeof AssessmentsAssessmentIdRoute
+    }
     '/assessments/$assessmentId/run': {
       id: '/assessments/$assessmentId/run'
       path: '/run'
@@ -469,11 +487,13 @@ const RisksRouteWithChildren = RisksRoute._addFileChildren(RisksRouteChildren)
 
 interface AssessmentsAssessmentIdRouteChildren {
   AssessmentsAssessmentIdRunRoute: typeof AssessmentsAssessmentIdRunRoute
+  AssessmentsAssessmentIdIndexRoute: typeof AssessmentsAssessmentIdIndexRoute
 }
 
 const AssessmentsAssessmentIdRouteChildren: AssessmentsAssessmentIdRouteChildren =
   {
     AssessmentsAssessmentIdRunRoute: AssessmentsAssessmentIdRunRoute,
+    AssessmentsAssessmentIdIndexRoute: AssessmentsAssessmentIdIndexRoute,
   }
 
 const AssessmentsAssessmentIdRouteWithChildren =
