@@ -24,10 +24,14 @@ import { Route as StageGateRouteImport } from './routes/stage-gate'
 import { Route as TraceRouteImport } from './routes/trace'
 import { Route as AssessmentsAssessmentIdRouteImport } from './routes/assessments.$assessmentId'
 import { Route as AssessmentsNewRouteImport } from './routes/assessments.new'
+import { Route as FrameworksIndexRouteImport } from './routes/frameworks.index'
 import { Route as FrameworksFrameworkIdRouteImport } from './routes/frameworks.$frameworkId'
+import { Route as PoliciesIndexRouteImport } from './routes/policies.index'
 import { Route as PoliciesPolicyIdRouteImport } from './routes/policies.$policyId'
 import { Route as RequirementsRequirementIdRouteImport } from './routes/requirements.$requirementId'
+import { Route as RisksIndexRouteImport } from './routes/risks.index'
 import { Route as RisksRiskIdRouteImport } from './routes/risks.$riskId'
+import { Route as AssessmentsAssessmentIdIndexRouteImport } from './routes/assessments.$assessmentId.index'
 import { Route as AssessmentsAssessmentIdRunRouteImport } from './routes/assessments.$assessmentId.run'
 
 const IndexRoute = IndexRouteImport.update({
@@ -105,10 +109,20 @@ const AssessmentsNewRoute = AssessmentsNewRouteImport.update({
   path: '/assessments/new',
   getParentRoute: () => rootRouteImport,
 } as any)
+const FrameworksIndexRoute = FrameworksIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => FrameworksRoute,
+} as any)
 const FrameworksFrameworkIdRoute = FrameworksFrameworkIdRouteImport.update({
   id: '/$frameworkId',
   path: '/$frameworkId',
   getParentRoute: () => FrameworksRoute,
+} as any)
+const PoliciesIndexRoute = PoliciesIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PoliciesRoute,
 } as any)
 const PoliciesPolicyIdRoute = PoliciesPolicyIdRouteImport.update({
   id: '/$policyId',
@@ -121,11 +135,22 @@ const RequirementsRequirementIdRoute =
     path: '/requirements/$requirementId',
     getParentRoute: () => rootRouteImport,
   } as any)
+const RisksIndexRoute = RisksIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => RisksRoute,
+} as any)
 const RisksRiskIdRoute = RisksRiskIdRouteImport.update({
   id: '/$riskId',
   path: '/$riskId',
   getParentRoute: () => RisksRoute,
 } as any)
+const AssessmentsAssessmentIdIndexRoute =
+  AssessmentsAssessmentIdIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AssessmentsAssessmentIdRoute,
+  } as any)
 const AssessmentsAssessmentIdRunRoute =
   AssessmentsAssessmentIdRunRouteImport.update({
     id: '/run',
@@ -153,7 +178,11 @@ export interface FileRoutesByFullPath {
   '/policies/$policyId': typeof PoliciesPolicyIdRoute
   '/requirements/$requirementId': typeof RequirementsRequirementIdRoute
   '/risks/$riskId': typeof RisksRiskIdRoute
+  '/frameworks/': typeof FrameworksIndexRoute
+  '/policies/': typeof PoliciesIndexRoute
+  '/risks/': typeof RisksIndexRoute
   '/assessments/$assessmentId/run': typeof AssessmentsAssessmentIdRunRoute
+  '/assessments/$assessmentId/': typeof AssessmentsAssessmentIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -161,21 +190,21 @@ export interface FileRoutesByTo {
   '/evidence': typeof EvidenceRoute
   '/executive-summary': typeof ExecutiveSummaryRoute
   '/explainability': typeof ExplainabilityRoute
-  '/frameworks': typeof FrameworksRouteWithChildren
   '/heatmap': typeof HeatmapRoute
   '/mitigations': typeof MitigationsRoute
   '/poc-metrics': typeof PocMetricsRoute
-  '/policies': typeof PoliciesRouteWithChildren
-  '/risks': typeof RisksRouteWithChildren
   '/stage-gate': typeof StageGateRoute
   '/trace': typeof TraceRoute
-  '/assessments/$assessmentId': typeof AssessmentsAssessmentIdRouteWithChildren
   '/assessments/new': typeof AssessmentsNewRoute
   '/frameworks/$frameworkId': typeof FrameworksFrameworkIdRoute
   '/policies/$policyId': typeof PoliciesPolicyIdRoute
   '/requirements/$requirementId': typeof RequirementsRequirementIdRoute
   '/risks/$riskId': typeof RisksRiskIdRoute
+  '/frameworks': typeof FrameworksIndexRoute
+  '/policies': typeof PoliciesIndexRoute
+  '/risks': typeof RisksIndexRoute
   '/assessments/$assessmentId/run': typeof AssessmentsAssessmentIdRunRoute
+  '/assessments/$assessmentId': typeof AssessmentsAssessmentIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -198,7 +227,11 @@ export interface FileRoutesById {
   '/policies/$policyId': typeof PoliciesPolicyIdRoute
   '/requirements/$requirementId': typeof RequirementsRequirementIdRoute
   '/risks/$riskId': typeof RisksRiskIdRoute
+  '/frameworks/': typeof FrameworksIndexRoute
+  '/policies/': typeof PoliciesIndexRoute
+  '/risks/': typeof RisksIndexRoute
   '/assessments/$assessmentId/run': typeof AssessmentsAssessmentIdRunRoute
+  '/assessments/$assessmentId/': typeof AssessmentsAssessmentIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -222,7 +255,11 @@ export interface FileRouteTypes {
     | '/policies/$policyId'
     | '/requirements/$requirementId'
     | '/risks/$riskId'
+    | '/frameworks/'
+    | '/policies/'
+    | '/risks/'
     | '/assessments/$assessmentId/run'
+    | '/assessments/$assessmentId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -230,21 +267,21 @@ export interface FileRouteTypes {
     | '/evidence'
     | '/executive-summary'
     | '/explainability'
-    | '/frameworks'
     | '/heatmap'
     | '/mitigations'
     | '/poc-metrics'
-    | '/policies'
-    | '/risks'
     | '/stage-gate'
     | '/trace'
-    | '/assessments/$assessmentId'
     | '/assessments/new'
     | '/frameworks/$frameworkId'
     | '/policies/$policyId'
     | '/requirements/$requirementId'
     | '/risks/$riskId'
+    | '/frameworks'
+    | '/policies'
+    | '/risks'
     | '/assessments/$assessmentId/run'
+    | '/assessments/$assessmentId'
   id:
     | '__root__'
     | '/'
@@ -266,7 +303,11 @@ export interface FileRouteTypes {
     | '/policies/$policyId'
     | '/requirements/$requirementId'
     | '/risks/$riskId'
+    | '/frameworks/'
+    | '/policies/'
+    | '/risks/'
     | '/assessments/$assessmentId/run'
+    | '/assessments/$assessmentId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -395,12 +436,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AssessmentsNewRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/frameworks/': {
+      id: '/frameworks/'
+      path: '/'
+      fullPath: '/frameworks/'
+      preLoaderRoute: typeof FrameworksIndexRouteImport
+      parentRoute: typeof FrameworksRoute
+    }
     '/frameworks/$frameworkId': {
       id: '/frameworks/$frameworkId'
       path: '/$frameworkId'
       fullPath: '/frameworks/$frameworkId'
       preLoaderRoute: typeof FrameworksFrameworkIdRouteImport
       parentRoute: typeof FrameworksRoute
+    }
+    '/policies/': {
+      id: '/policies/'
+      path: '/'
+      fullPath: '/policies/'
+      preLoaderRoute: typeof PoliciesIndexRouteImport
+      parentRoute: typeof PoliciesRoute
     }
     '/policies/$policyId': {
       id: '/policies/$policyId'
@@ -416,12 +471,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RequirementsRequirementIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/risks/': {
+      id: '/risks/'
+      path: '/'
+      fullPath: '/risks/'
+      preLoaderRoute: typeof RisksIndexRouteImport
+      parentRoute: typeof RisksRoute
+    }
     '/risks/$riskId': {
       id: '/risks/$riskId'
       path: '/$riskId'
       fullPath: '/risks/$riskId'
       preLoaderRoute: typeof RisksRiskIdRouteImport
       parentRoute: typeof RisksRoute
+    }
+    '/assessments/$assessmentId/': {
+      id: '/assessments/$assessmentId/'
+      path: '/'
+      fullPath: '/assessments/$assessmentId/'
+      preLoaderRoute: typeof AssessmentsAssessmentIdIndexRouteImport
+      parentRoute: typeof AssessmentsAssessmentIdRoute
     }
     '/assessments/$assessmentId/run': {
       id: '/assessments/$assessmentId/run'
@@ -435,10 +504,12 @@ declare module '@tanstack/react-router' {
 
 interface FrameworksRouteChildren {
   FrameworksFrameworkIdRoute: typeof FrameworksFrameworkIdRoute
+  FrameworksIndexRoute: typeof FrameworksIndexRoute
 }
 
 const FrameworksRouteChildren: FrameworksRouteChildren = {
   FrameworksFrameworkIdRoute: FrameworksFrameworkIdRoute,
+  FrameworksIndexRoute: FrameworksIndexRoute,
 }
 
 const FrameworksRouteWithChildren = FrameworksRoute._addFileChildren(
@@ -447,10 +518,12 @@ const FrameworksRouteWithChildren = FrameworksRoute._addFileChildren(
 
 interface PoliciesRouteChildren {
   PoliciesPolicyIdRoute: typeof PoliciesPolicyIdRoute
+  PoliciesIndexRoute: typeof PoliciesIndexRoute
 }
 
 const PoliciesRouteChildren: PoliciesRouteChildren = {
   PoliciesPolicyIdRoute: PoliciesPolicyIdRoute,
+  PoliciesIndexRoute: PoliciesIndexRoute,
 }
 
 const PoliciesRouteWithChildren = PoliciesRoute._addFileChildren(
@@ -459,21 +532,25 @@ const PoliciesRouteWithChildren = PoliciesRoute._addFileChildren(
 
 interface RisksRouteChildren {
   RisksRiskIdRoute: typeof RisksRiskIdRoute
+  RisksIndexRoute: typeof RisksIndexRoute
 }
 
 const RisksRouteChildren: RisksRouteChildren = {
   RisksRiskIdRoute: RisksRiskIdRoute,
+  RisksIndexRoute: RisksIndexRoute,
 }
 
 const RisksRouteWithChildren = RisksRoute._addFileChildren(RisksRouteChildren)
 
 interface AssessmentsAssessmentIdRouteChildren {
   AssessmentsAssessmentIdRunRoute: typeof AssessmentsAssessmentIdRunRoute
+  AssessmentsAssessmentIdIndexRoute: typeof AssessmentsAssessmentIdIndexRoute
 }
 
 const AssessmentsAssessmentIdRouteChildren: AssessmentsAssessmentIdRouteChildren =
   {
     AssessmentsAssessmentIdRunRoute: AssessmentsAssessmentIdRunRoute,
+    AssessmentsAssessmentIdIndexRoute: AssessmentsAssessmentIdIndexRoute,
   }
 
 const AssessmentsAssessmentIdRouteWithChildren =

@@ -112,8 +112,10 @@ function RunAssessmentPage() {
 
         <ol className="space-y-3">
           {assessmentSteps.map((s, i) => {
-            const done = finished || elapsed >= bounds[i].end;
-            const active = !finished && !done && elapsed >= bounds[i].start;
+            const b = bounds[i];
+            if (!b) return null;
+            const done = finished || elapsed >= b.end;
+            const active = !finished && !done && elapsed >= b.start;
             return (
               <li
                 key={s.key}
@@ -158,7 +160,7 @@ function RunAssessmentPage() {
                 {(done || active) && (
                   <div className="mt-2.5 flex flex-wrap gap-1.5 pl-10">
                     {s.stats.map((stat, si) => {
-                      const reveal = done || elapsed > bounds[i].start + (si + 1) * 350;
+                      const reveal = done || elapsed > b.start + (si + 1) * 350;
                       return (
                         <span
                           key={stat}

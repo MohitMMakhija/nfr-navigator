@@ -436,7 +436,9 @@ function ArtefactsWidget() {
 }
 
 function ValueWidget() {
-  const featured = [pocMetrics[0], pocMetrics[1], pocMetrics[5]];
+  const featured = [pocMetrics[0], pocMetrics[1], pocMetrics[5]].filter(
+    (m): m is NonNullable<typeof m> => Boolean(m),
+  );
   return (
     <section className="rounded-xl border border-border bg-card p-5">
       <div className="mb-4 flex items-center justify-between">

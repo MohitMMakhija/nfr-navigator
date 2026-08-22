@@ -203,9 +203,9 @@ Verdict: CONDITIONALLY READY — ${overallCompliance}% weighted compliance acros
                     formally tracked (APR-001).
                   </li>
                   <li>
-                    Fund the red-risk treatment plan: highest scores are archive encryption (
-                    {redRisks[0].id}, {riskScore(redRisks[0])}) and overdue pen-test remediation
-                    (RSK-006, 16).
+                    Fund the red-risk treatment plan: highest scores are archive encryption
+                    (RSK-001, {redRisks.length > 0 ? riskScore(redRisks[0]!) : 20}) and overdue
+                    pen-test remediation (RSK-006, 16).
                   </li>
                   <li>
                     Direct completion of the DPIA addendum and non-prod data masking before gate
