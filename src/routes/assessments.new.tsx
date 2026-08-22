@@ -165,7 +165,7 @@ function NewAssessmentWizard() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-sm font-semibold text-foreground">Project artefacts (6)</h2>
-              <span className="text-xs text-success">All files indexed</span>
+              <span className="text-xs text-success">All files uploaded</span>
             </div>
             <button
               onClick={() =>

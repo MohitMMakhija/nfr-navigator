@@ -11,7 +11,7 @@ export const artefacts: Artefact[] = [
     version: "v3.2",
     uploadedBy: "M. Makhija",
     uploadedAt: "18 Aug 2026, 09:41",
-    status: "indexed",
+    status: "uploaded",
     sha: "9f2c…a41d",
     pages: 64,
     description:
@@ -25,7 +25,7 @@ export const artefacts: Artefact[] = [
     version: "v1.4",
     uploadedBy: "R. Okafor",
     uploadedAt: "18 Aug 2026, 10:02",
-    status: "indexed",
+    status: "uploaded",
     sha: "77b1…e90c",
     pages: 41,
     description:
@@ -39,7 +39,7 @@ export const artefacts: Artefact[] = [
     version: "v2.0",
     uploadedBy: "S. Whitfield",
     uploadedAt: "18 Aug 2026, 10:15",
-    status: "indexed",
+    status: "uploaded",
     sha: "c5d8…02f7",
     pages: 28,
     description:
@@ -53,7 +53,7 @@ export const artefacts: Artefact[] = [
     version: "2026-Q2",
     uploadedBy: "R. Okafor",
     uploadedAt: "19 Aug 2026, 14:22",
-    status: "indexed",
+    status: "uploaded",
     sha: "1a3e…b8b2",
     pages: 37,
     description:
@@ -67,7 +67,7 @@ export const artefacts: Artefact[] = [
     version: "v1.1",
     uploadedBy: "L. Fernandes",
     uploadedAt: "19 Aug 2026, 15:03",
-    status: "indexed",
+    status: "uploaded",
     sha: "e04a…7c66",
     pages: 19,
     description:
@@ -81,7 +81,7 @@ export const artefacts: Artefact[] = [
     version: "Aug-2026",
     uploadedBy: "S. Whitfield",
     uploadedAt: "20 Aug 2026, 08:57",
-    status: "indexed",
+    status: "uploaded",
     sha: "3d9f…51aa",
     pages: 212,
     description:
