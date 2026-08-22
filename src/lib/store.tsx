@@ -25,7 +25,7 @@ export type ApprovalDecision = "pending" | "approved" | "rejected";
 
 interface MitigationState {
   status: MitigationDecision;
-  note?: string;
+  note?: string | undefined;
 }
 
 interface DemoState {

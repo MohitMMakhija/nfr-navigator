@@ -551,7 +551,7 @@ function buildCatalogue(): { policies: Policy[]; requirements: Requirement[] } {
   const requirements: Requirement[] = [];
 
   for (const fw of frameworks) {
-    for (const p of SEEDS[fw.id]) {
+    for (const p of SEEDS[fw.id] ?? []) {
       const policyId = p.code.toLowerCase();
       policies.push({
         id: policyId,
@@ -573,7 +573,7 @@ function buildCatalogue(): { policies: Policy[]; requirements: Requirement[] } {
           criticality: crit,
           status: "compliant",
           confidence: 0,
-          owner: OWNERS[(requirements.length * 7 + 3) % OWNERS.length],
+          owner: OWNERS[(requirements.length * 7 + 3) % OWNERS.length] ?? "M. Makhija",
           reasoning: "",
           gaps: [],
           sourceRef: `${fw.sourceRef} › ${p.name}`,
@@ -600,7 +600,7 @@ function buildCatalogue(): { policies: Policy[]; requirements: Requirement[] } {
   for (const r of requirements) {
     if (FEATURED[r.id]?.status) continue;
     const idx = (n * 31 + 7) % pool.length;
-    r.status = pool.splice(idx, 1)[0];
+    r.status = pool.splice(idx, 1)[0] ?? "compliant";
     n++;
   }
 
