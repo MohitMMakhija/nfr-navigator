@@ -1,7 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { AlertTriangle, ArrowRight, Plus } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
-import { DemoBadge, StatusBadge, VerdictBadge } from "@/components/status";
+import { DemoBadge, NotAssessedBadge, StatusBadge, VerdictBadge } from "@/components/status";
 import { getFramework } from "@/lib/mock/frameworks";
 import { resultForAssessment } from "@/lib/mock/profiles";
 import { useDemo } from "@/lib/store";
@@ -9,17 +9,17 @@ import { useDemo } from "@/lib/store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Assessment Overview — Automated Governance Artifacts Review System POC" },
+      { title: "Governance Assurance Dashboard — Automated Governance Artifacts Review System" },
       {
         name: "description",
         content:
-          "Assessment overview for the Automated Governance Artifacts Review System concept POC: portfolio metrics, outcomes and recent simulated assessments.",
+          "Governance assurance dashboard for the Automated Governance Artifacts Review System concept POC: portfolio metrics, outcomes and simulated assessments.",
       },
-      { property: "og:title", content: "Assessment Overview — Automated Governance Artifacts Review System POC" },
+      { property: "og:title", content: "Governance Assurance Dashboard — Automated Governance Artifacts Review System" },
       {
         property: "og:description",
         content:
-          "High-level overview of simulated governance assessments in this POC demo workspace.",
+          "Overview of governance assessments and areas requiring attention in this POC demo workspace.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -29,39 +29,48 @@ export const Route = createFileRoute("/")({
 });
 
 function DashboardPage() {
-  const { assessments, hydrated } = useDemo();
+  const { assessments, hydrated, createDraft } = useDemo();
   const navigate = useNavigate();
 
+  // Drafts count towards the total only — they have no result yet, so they
+  // never contribute to status, attention or outcome metrics.
+  const assessed = assessments.filter((a) => a.status !== "draft");
   const total = assessments.length;
-  const inReview = assessments.filter((a) => a.status === "in-review").length;
-  const completed = assessments.filter((a) => a.status === "completed").length;
-  const attention = assessments.filter(
-    (a) => resultForAssessment(a).category !== "aligned",
-  );
+  const inReview = assessed.filter((a) => a.status === "in-review").length;
+  const completed = assessed.filter((a) => a.status === "completed").length;
+  const attention = assessed.filter((a) => {
+    const r = resultForAssessment(a);
+    return r !== null && r.category !== "aligned";
+  });
 
   const outcomeCounts = {
-    aligned: assessments.filter((a) => resultForAssessment(a).category === "aligned")
+    aligned: assessed.filter((a) => resultForAssessment(a)?.category === "aligned")
       .length,
-    conditional: assessments.filter(
-      (a) => resultForAssessment(a).category === "conditional",
+    conditional: assessed.filter(
+      (a) => resultForAssessment(a)?.category === "conditional",
     ).length,
-    gaps: assessments.filter((a) => resultForAssessment(a).category === "gaps").length,
+    gaps: assessed.filter((a) => resultForAssessment(a)?.category === "gaps").length,
+  };
+
+  const startNewAssessment = () => {
+    const draft = createDraft();
+    navigate({ to: "/assessments/new", search: { ref: draft.ref } });
   };
 
   return (
     <div className="mx-auto max-w-[1100px]">
       <PageHeader
-        title="Assessment Overview"
-        subtitle="High-level view of the governance assessments in this POC demo workspace. All results are simulated."
+        title="Governance Assurance Dashboard"
+        subtitle="Overview of governance assessments and areas requiring attention."
         actions={
           <>
             <DemoBadge />
-            <Link
-              to="/assessments/new"
+            <button
+              onClick={startNewAssessment}
               className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               <Plus className="size-4" /> New Assessment
-            </Link>
+            </button>
           </>
         }
       />
@@ -111,6 +120,7 @@ function DashboardPage() {
           <div className="mt-3 grid gap-3 md:grid-cols-2">
             {attention.map((a) => {
               const result = resultForAssessment(a);
+              if (!result) return null;
               const highCount = result.findings.filter(
                 (f) => f.severity === "high",
               ).length;
@@ -175,14 +185,19 @@ function DashboardPage() {
             {hydrated &&
               assessments.map((a) => {
                 const result = resultForAssessment(a);
+                const isDraft = a.status === "draft";
                 return (
                   <tr
                     key={a.ref}
                     onClick={() =>
-                      navigate({
-                        to: "/assessments/$assessmentId",
-                        params: { assessmentId: a.ref },
-                      })
+                      navigate(
+                        isDraft
+                          ? { to: "/assessments/new", search: { ref: a.ref } }
+                          : {
+                              to: "/assessments/$assessmentId",
+                              params: { assessmentId: a.ref },
+                            },
+                      )
                     }
                     className="cursor-pointer transition-colors hover:bg-muted/40"
                   >
@@ -190,22 +205,28 @@ function DashboardPage() {
                       {a.ref}
                     </td>
                     <td className="px-5 py-3.5 font-medium text-foreground">
-                      {a.projectName}
+                      {a.projectName || "—"}
                     </td>
                     <td className="hidden px-5 py-3.5 text-xs text-muted-foreground md:table-cell">
-                      {a.programme}
+                      {a.programme || "—"}
                     </td>
                     <td className="hidden px-5 py-3.5 text-xs text-muted-foreground lg:table-cell">
-                      {getFramework(a.frameworkId)?.name ?? a.frameworkId}
+                      {a.frameworkId
+                        ? (getFramework(a.frameworkId)?.name ?? a.frameworkId)
+                        : "Not selected"}
                     </td>
                     <td className="px-5 py-3.5">
                       <StatusBadge status={a.status} />
                     </td>
                     <td className="px-5 py-3.5 font-mono text-xs text-foreground">
-                      {result.overall}%
+                      {result ? `${result.overall}%` : "—"}
                     </td>
                     <td className="px-5 py-3.5">
-                      <VerdictBadge verdict={result.verdict} category={result.category} />
+                      {result ? (
+                        <VerdictBadge verdict={result.verdict} category={result.category} />
+                      ) : (
+                        <NotAssessedBadge />
+                      )}
                     </td>
                   </tr>
                 );
