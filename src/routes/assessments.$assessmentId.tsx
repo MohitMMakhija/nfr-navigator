@@ -122,7 +122,8 @@ function AssessmentDetailPage() {
             {mockResult.compliant + mockResult.partial + mockResult.gaps} policy
             requirements assessed against{" "}
             <span className="font-medium text-foreground">{framework?.name}</span> ·{" "}
-            {assessment.artefacts.length} artefacts reviewed · PM{" "}
+            {assessment.artefacts.length} artefact
+            {assessment.artefacts.length === 1 ? "" : "s"} reviewed · PM{" "}
             {assessment.projectManager} · Sponsor {assessment.sponsor}
           </div>
         </div>
