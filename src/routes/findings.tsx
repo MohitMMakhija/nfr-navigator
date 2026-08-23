@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ListChecks, Plus } from "lucide-react";
 import { useState } from "react";
 import { PageHeader } from "@/components/page-header";
@@ -25,7 +25,7 @@ export const Route = createFileRoute("/findings")({
 
 function FindingsPage() {
   const { assessments, hydrated, createDraft } = useDemo();
-  const navigate = useNavigateSafe();
+  const navigate = useNavigate();
   const [selectedRef, setSelectedRef] = useState<string | null>(null);
 
   // Default to the most recent assessed assessment — drafts have no findings.
