@@ -9,12 +9,12 @@ import { useDemo } from "@/lib/store";
 export const Route = createFileRoute("/findings")({
   head: () => ({
     meta: [
-      { title: "Findings & Recommendations — NGET AI Governance Assurance POC" },
+      { title: "Findings & Recommendations — Automated Governance Artifacts Review System POC" },
       {
         name: "description",
         content: "Simulated governance findings and recommended actions for a selected assessment. POC demo mode.",
       },
-      { property: "og:title", content: "Findings & Recommendations — NGET AI Governance Assurance POC" },
+      { property: "og:title", content: "Findings & Recommendations — Automated Governance Artifacts Review System POC" },
       { property: "og:description", content: "Simulated findings and recommended actions." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

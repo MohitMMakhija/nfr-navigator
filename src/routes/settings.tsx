@@ -19,12 +19,12 @@ import { useDemo } from "@/lib/store";
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — NGET AI Governance Assurance POC" },
+      { title: "Settings — Automated Governance Artifacts Review System POC" },
       {
         name: "description",
         content: "POC demo settings: what is simulated, where demo data lives, and demo reset.",
       },
-      { property: "og:title", content: "Settings — NGET AI Governance Assurance POC" },
+      { property: "og:title", content: "Settings — Automated Governance Artifacts Review System POC" },
       { property: "og:description", content: "POC demo settings and reset." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

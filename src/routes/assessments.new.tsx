@@ -27,13 +27,13 @@ import { cn } from "@/lib/utils";
 export const Route = createFileRoute("/assessments/new")({
   head: () => ({
     meta: [
-      { title: "New Assessment — NGET AI Governance Assurance POC" },
+      { title: "New Assessment — Automated Governance Artifacts Review System POC" },
       {
         name: "description",
         content:
           "Configure and run a simulated governance assessment: project details, framework, artefacts, review & run. POC demo mode.",
       },
-      { property: "og:title", content: "New Assessment — NGET AI Governance Assurance POC" },
+      { property: "og:title", content: "New Assessment — Automated Governance Artifacts Review System POC" },
       { property: "og:description", content: "Configure and run a simulated governance assessment." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

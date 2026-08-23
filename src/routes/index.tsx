@@ -9,13 +9,13 @@ import { useDemo } from "@/lib/store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Assessment Overview — NGET AI Governance Assurance POC" },
+      { title: "Assessment Overview — Automated Governance Artifacts Review System POC" },
       {
         name: "description",
         content:
-          "Assessment overview for the NGET AI Governance Assurance concept POC: portfolio metrics, outcomes and recent simulated assessments.",
+          "Assessment overview for the Automated Governance Artifacts Review System concept POC: portfolio metrics, outcomes and recent simulated assessments.",
       },
-      { property: "og:title", content: "Assessment Overview — NGET AI Governance Assurance POC" },
+      { property: "og:title", content: "Assessment Overview — Automated Governance Artifacts Review System POC" },
       {
         property: "og:description",
         content:
