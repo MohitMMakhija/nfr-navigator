@@ -7,12 +7,12 @@ import { getFramework } from "@/lib/mock/frameworks";
 export const Route = createFileRoute("/frameworks/$frameworkId")({
   head: () => ({
     meta: [
-      { title: "Framework Detail — NGET AI Governance Assurance POC" },
+      { title: "Framework Detail — Automated Governance Artifacts Review System POC" },
       {
         name: "description",
         content: "Framework detail with its applicable policies. POC demo mode.",
       },
-      { property: "og:title", content: "Framework Detail — NGET AI Governance Assurance POC" },
+      { property: "og:title", content: "Framework Detail — Automated Governance Artifacts Review System POC" },
       { property: "og:description", content: "Framework detail with applicable policies." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

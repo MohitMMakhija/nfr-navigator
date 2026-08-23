@@ -1,7 +1,7 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { ClipboardCheck, Plus } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
-import { DemoBadge, StatusBadge, VerdictBadge } from "@/components/status";
+import { DemoBadge, NotAssessedBadge, StatusBadge, VerdictBadge } from "@/components/status";
 import { getFramework } from "@/lib/mock/frameworks";
 import { resultForAssessment } from "@/lib/mock/profiles";
 import { useDemo } from "@/lib/store";
@@ -9,12 +9,12 @@ import { useDemo } from "@/lib/store";
 export const Route = createFileRoute("/assessments/")({
   head: () => ({
     meta: [
-      { title: "Assessments — NGET AI Governance Assurance POC" },
+      { title: "Assessments — Automated Governance Artifacts Review System POC" },
       {
         name: "description",
         content: "All governance assessments created in this POC demo workspace.",
       },
-      { property: "og:title", content: "Assessments — NGET AI Governance Assurance POC" },
+      { property: "og:title", content: "Assessments — Automated Governance Artifacts Review System POC" },
       { property: "og:description", content: "All governance assessments in this POC demo." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -32,9 +32,14 @@ function formatDate(iso: string): string {
 }
 
 function AssessmentsPage() {
-  const { assessments, hydrated } = useDemo();
+  const { assessments, hydrated, createDraft } = useDemo();
   const navigate = useNavigate();
   const rows = [...assessments].reverse();
+
+  const startNewAssessment = () => {
+    const draft = createDraft();
+    navigate({ to: "/assessments/new", search: { ref: draft.ref } });
+  };
 
   return (
     <div className="mx-auto max-w-[1100px]">
@@ -44,12 +49,12 @@ function AssessmentsPage() {
         actions={
           <>
             <DemoBadge />
-            <Link
-              to="/assessments/new"
+            <button
+              onClick={startNewAssessment}
               className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               <Plus className="size-4" /> New Assessment
-            </Link>
+            </button>
           </>
         }
       />
@@ -72,14 +77,19 @@ function AssessmentsPage() {
             {hydrated &&
               rows.map((a) => {
                 const result = resultForAssessment(a);
+                const isDraft = a.status === "draft";
                 return (
                   <tr
                     key={a.ref}
                     onClick={() =>
-                      navigate({
-                        to: "/assessments/$assessmentId",
-                        params: { assessmentId: a.ref },
-                      })
+                      navigate(
+                        isDraft
+                          ? { to: "/assessments/new", search: { ref: a.ref } }
+                          : {
+                              to: "/assessments/$assessmentId",
+                              params: { assessmentId: a.ref },
+                            },
+                      )
                     }
                     className="cursor-pointer transition-colors hover:bg-muted/40"
                   >
@@ -94,22 +104,28 @@ function AssessmentsPage() {
                       )}
                     </td>
                     <td className="px-5 py-3.5 font-medium text-foreground">
-                      {a.projectName}
+                      {a.projectName || "—"}
                     </td>
                     <td className="hidden px-5 py-3.5 text-xs text-muted-foreground md:table-cell">
-                      {a.programme}
+                      {a.programme || "—"}
                     </td>
                     <td className="hidden px-5 py-3.5 text-xs text-muted-foreground lg:table-cell">
-                      {getFramework(a.frameworkId)?.name ?? a.frameworkId}
+                      {a.frameworkId
+                        ? (getFramework(a.frameworkId)?.name ?? a.frameworkId)
+                        : "Not selected"}
                     </td>
                     <td className="px-5 py-3.5">
                       <StatusBadge status={a.status} />
                     </td>
                     <td className="px-5 py-3.5 font-mono text-xs text-foreground">
-                      {result.overall}%
+                      {result ? `${result.overall}%` : "—"}
                     </td>
                     <td className="px-5 py-3.5">
-                      <VerdictBadge verdict={result.verdict} category={result.category} />
+                      {result ? (
+                        <VerdictBadge verdict={result.verdict} category={result.category} />
+                      ) : (
+                        <NotAssessedBadge />
+                      )}
                     </td>
                     <td className="hidden px-5 py-3.5 text-xs text-muted-foreground sm:table-cell">
                       {formatDate(a.createdAt)}
@@ -134,12 +150,12 @@ function AssessmentsPage() {
               Run your first simulated governance assessment — upload artefacts,
               choose a framework, and see findings and recommendations.
             </p>
-            <Link
-              to="/assessments/new"
+            <button
+              onClick={startNewAssessment}
               className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
             >
               <Plus className="size-4" /> New Assessment
-            </Link>
+            </button>
           </div>
         )}
       </div>

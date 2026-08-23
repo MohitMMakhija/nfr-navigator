@@ -1,20 +1,20 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ListChecks, Plus } from "lucide-react";
 import { useState } from "react";
 import { PageHeader } from "@/components/page-header";
-import { DemoBadge, SeverityBadge, StatusBadge, VerdictBadge } from "@/components/status";
+import { DemoBadge, NotAssessedBadge, SeverityBadge, StatusBadge, VerdictBadge } from "@/components/status";
 import { resultForAssessment } from "@/lib/mock/profiles";
 import { useDemo } from "@/lib/store";
 
 export const Route = createFileRoute("/findings")({
   head: () => ({
     meta: [
-      { title: "Findings & Recommendations — NGET AI Governance Assurance POC" },
+      { title: "Findings & Recommendations — Automated Governance Artifacts Review System POC" },
       {
         name: "description",
         content: "Simulated governance findings and recommended actions for a selected assessment. POC demo mode.",
       },
-      { property: "og:title", content: "Findings & Recommendations — NGET AI Governance Assurance POC" },
+      { property: "og:title", content: "Findings & Recommendations — Automated Governance Artifacts Review System POC" },
       { property: "og:description", content: "Simulated findings and recommended actions." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -24,10 +24,19 @@ export const Route = createFileRoute("/findings")({
 });
 
 function FindingsPage() {
-  const { assessments, hydrated } = useDemo();
+  const { assessments, hydrated, createDraft } = useDemo();
+  const navigate = useNavigate();
   const [selectedRef, setSelectedRef] = useState<string | null>(null);
+
+  // Default to the most recent assessed assessment — drafts have no findings.
+  const assessed = assessments.filter((a) => a.status !== "draft");
   const assessment =
-    assessments.find((a) => a.ref === selectedRef) ?? assessments[assessments.length - 1];
+    assessments.find((a) => a.ref === selectedRef) ?? assessed[assessed.length - 1];
+
+  const startNewAssessment = () => {
+    const draft = createDraft();
+    navigate({ to: "/assessments/new", search: { ref: draft.ref } });
+  };
 
   return (
     <div className="mx-auto max-w-[1000px]">
@@ -49,12 +58,12 @@ function FindingsPage() {
             Findings appear once a governance assessment has been run. Create an
             assessment to see simulated findings and recommendations here.
           </p>
-          <Link
-            to="/assessments/new"
+          <button
+            onClick={startNewAssessment}
             className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
           >
             <Plus className="size-4" /> New Assessment
-          </Link>
+          </button>
         </div>
       ) : (
         (() => {
@@ -76,8 +85,9 @@ function FindingsPage() {
                 >
                   {[...assessments].reverse().map((a) => (
                     <option key={a.ref} value={a.ref}>
-                      {a.ref} — {a.projectName}
+                      {a.ref} — {a.projectName || "Untitled draft"}
                       {a.isPocDemo ? " (POC Demo)" : ""}
+                      {a.status === "draft" ? " (Draft)" : ""}
                     </option>
                   ))}
                 </select>
@@ -86,66 +96,97 @@ function FindingsPage() {
                   AI assessment · POC simulation
                 </span>
                 <span className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
-                  Overall
-                  <span className="font-mono font-semibold text-foreground">
-                    {result.overall}%
-                  </span>
-                  <VerdictBadge verdict={result.verdict} category={result.category} />
+                  {result ? (
+                    <>
+                      Overall
+                      <span className="font-mono font-semibold text-foreground">
+                        {result.overall}%
+                      </span>
+                      <VerdictBadge verdict={result.verdict} category={result.category} />
+                    </>
+                  ) : (
+                    <NotAssessedBadge />
+                  )}
                 </span>
               </div>
 
-              <div className="mb-5 grid grid-cols-3 gap-3">
-                <div className="rounded-xl border border-success/30 bg-success/10 p-4 text-center">
-                  <div className="text-2xl font-bold text-success">{result.compliant}</div>
-                  <div className="text-xs text-muted-foreground">Meets expectations</div>
+              {!result ? (
+                <div className="flex flex-col items-center rounded-xl border border-border bg-card px-5 py-14 text-center">
+                  <span className="flex size-11 items-center justify-center rounded-full bg-muted">
+                    <ListChecks className="size-5 text-muted-foreground" />
+                  </span>
+                  <p className="mt-3 text-sm font-semibold text-foreground">
+                    {assessment.ref} is still a draft
+                  </p>
+                  <p className="mt-1 max-w-sm text-xs leading-relaxed text-muted-foreground">
+                    This assessment has not been run yet, so there are no findings
+                    or recommendations. Complete the setup and run the simulated
+                    assessment first.
+                  </p>
+                  <Link
+                    to="/assessments/new"
+                    search={{ ref: assessment.ref }}
+                    className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+                  >
+                    Continue setup
+                  </Link>
                 </div>
-                <div className="rounded-xl border border-warning/40 bg-warning/15 p-4 text-center">
-                  <div className="text-2xl font-bold text-warning-foreground">
-                    {result.partial}
-                  </div>
-                  <div className="text-xs text-muted-foreground">Needs attention</div>
-                </div>
-                <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-center">
-                  <div className="text-2xl font-bold text-destructive">{result.gaps}</div>
-                  <div className="text-xs text-muted-foreground">Gap identified</div>
-                </div>
-              </div>
-
-              <ul className="space-y-3">
-                {result.findings.map((f) => (
-                  <li key={f.id} className="rounded-xl border border-border bg-card p-5">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <span className="font-mono text-xs font-semibold text-muted-foreground">
-                        {f.id}
-                      </span>
-                      <SeverityBadge severity={f.severity} />
-                      <span className="font-mono text-[11px] text-muted-foreground">
-                        {f.policyRef}
-                      </span>
-                      <span className="text-sm font-medium text-foreground">{f.title}</span>
+              ) : (
+                <>
+                  <div className="mb-5 grid grid-cols-3 gap-3">
+                    <div className="rounded-xl border border-success/30 bg-success/10 p-4 text-center">
+                      <div className="text-2xl font-bold text-success">{result.compliant}</div>
+                      <div className="text-xs text-muted-foreground">Meets expectations</div>
                     </div>
-                    <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
-                      {f.detail}
-                    </p>
-                    <p className="mt-2 rounded-md bg-primary/5 px-3 py-2 text-xs text-foreground">
-                      <span className="font-semibold">Recommended action: </span>
-                      {f.recommendation}
-                    </p>
-                  </li>
-                ))}
-              </ul>
+                    <div className="rounded-xl border border-warning/40 bg-warning/15 p-4 text-center">
+                      <div className="text-2xl font-bold text-warning-foreground">
+                        {result.partial}
+                      </div>
+                      <div className="text-xs text-muted-foreground">Needs attention</div>
+                    </div>
+                    <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-center">
+                      <div className="text-2xl font-bold text-destructive">{result.gaps}</div>
+                      <div className="text-xs text-muted-foreground">Gap identified</div>
+                    </div>
+                  </div>
 
-              <p className="mt-4 text-xs text-muted-foreground">
-                Simulated output for assessment{" "}
-                <Link
-                  to="/assessments/$assessmentId"
-                  params={{ assessmentId: assessment.ref }}
-                  className="font-medium text-primary hover:underline"
-                >
-                  {assessment.ref}
-                </Link>{" "}
-                — illustrative only, no real AI analysis performed.
-              </p>
+                  <ul className="space-y-3">
+                    {result.findings.map((f) => (
+                      <li key={f.id} className="rounded-xl border border-border bg-card p-5">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className="font-mono text-xs font-semibold text-muted-foreground">
+                            {f.id}
+                          </span>
+                          <SeverityBadge severity={f.severity} />
+                          <span className="font-mono text-[11px] text-muted-foreground">
+                            {f.policyRef}
+                          </span>
+                          <span className="text-sm font-medium text-foreground">{f.title}</span>
+                        </div>
+                        <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                          {f.detail}
+                        </p>
+                        <p className="mt-2 rounded-md bg-primary/5 px-3 py-2 text-xs text-foreground">
+                          <span className="font-semibold">Recommended action: </span>
+                          {f.recommendation}
+                        </p>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <p className="mt-4 text-xs text-muted-foreground">
+                    Simulated output for assessment{" "}
+                    <Link
+                      to="/assessments/$assessmentId"
+                      params={{ assessmentId: assessment.ref }}
+                      className="font-medium text-primary hover:underline"
+                    >
+                      {assessment.ref}
+                    </Link>{" "}
+                    — illustrative only, no real AI analysis performed.
+                  </p>
+                </>
+              )}
             </>
           );
         })()

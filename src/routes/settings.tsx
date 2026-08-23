@@ -19,12 +19,12 @@ import { useDemo } from "@/lib/store";
 export const Route = createFileRoute("/settings")({
   head: () => ({
     meta: [
-      { title: "Settings — NGET AI Governance Assurance POC" },
+      { title: "Settings — Automated Governance Artifacts Review System POC" },
       {
         name: "description",
         content: "POC demo settings: what is simulated, where demo data lives, and demo reset.",
       },
-      { property: "og:title", content: "Settings — NGET AI Governance Assurance POC" },
+      { property: "og:title", content: "Settings — Automated Governance Artifacts Review System POC" },
       { property: "og:description", content: "POC demo settings and reset." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -71,8 +71,9 @@ function SettingsPage() {
         <section className="rounded-xl border border-border bg-card p-5">
           <h2 className="text-sm font-semibold text-foreground">Demo data</h2>
           <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-            Assessments you create are kept in this browser's local storage so the demo
-            survives refreshes. There are currently{" "}
+            Assessments you create — including unfinished drafts — are kept in this
+            browser's local storage so the demo survives refreshes. There are
+            currently{" "}
             <span className="font-medium text-foreground">{assessments.length}</span>{" "}
             assessment{assessments.length === 1 ? "" : "s"} in this workspace. Resetting
             clears them and restores the three seeded POC demo assessments

@@ -80,13 +80,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "NGET AI Governance Assurance — Concept POC" },
+      { title: "Automated Governance Artifacts Review System — Concept POC" },
       {
         name: "description",
         content:
           "AI-assisted governance assessment for project artefacts. Concept POC with simulated AI: upload artefacts, select a framework, review findings and recommendations.",
       },
-      { property: "og:title", content: "NGET AI Governance Assurance — Concept POC" },
+      { property: "og:title", content: "Automated Governance Artifacts Review System — Concept POC" },
       {
         property: "og:description",
         content:

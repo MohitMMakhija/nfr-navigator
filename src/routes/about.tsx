@@ -11,13 +11,13 @@ import { DemoBadge } from "@/components/status";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About the POC — NGET AI Governance Assurance" },
+      { title: "About the POC — Automated Governance Artifacts Review System" },
       {
         name: "description",
         content:
-          "What the NGET AI Governance Assurance concept POC demonstrates, how it works, and its current scope. POC demo with simulated AI.",
+          "What the Automated Governance Artifacts Review System concept POC demonstrates, how it works, and its current scope. POC demo with simulated AI.",
       },
-      { property: "og:title", content: "About the POC — NGET AI Governance Assurance" },
+      { property: "og:title", content: "About the POC — Automated Governance Artifacts Review System" },
       {
         property: "og:description",
         content:
@@ -70,7 +70,7 @@ function AboutPage() {
       <section className="mb-8">
         <h2 className="text-sm font-semibold text-foreground">What is this?</h2>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          NGET AI Governance Assurance is a concept demonstrator for AI-assisted
+          Automated Governance Artifacts Review System is a concept demonstrator for AI-assisted
           project governance assessment: upload project artefacts, select a
           framework, and see simulated AI findings and recommendations. All AI
           behaviour in this POC is simulated and clearly labelled — no real AI,

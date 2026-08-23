@@ -46,7 +46,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <div className="leading-tight">
             <div className="text-sm font-semibold text-foreground">
-              NGET AI Governance Assurance
+              Automated Governance
+            </div>
+            <div className="text-sm font-semibold text-foreground">
+              Artifacts Review System
             </div>
             <div className="mt-0.5 text-[11px] text-muted-foreground">
               Concept POC · Simulated AI
@@ -81,13 +84,17 @@ export function AppShell({ children }: { children: ReactNode }) {
       {/* Top bar */}
       <header className="sticky top-0 z-30 flex h-14 items-center gap-3 border-b border-border bg-card/95 px-4 backdrop-blur md:pr-8 md:pl-[17rem]">
         <div className="flex items-center gap-2 md:hidden">
-          <ShieldCheck className="size-5 text-primary" />
-          <span className="text-sm font-semibold">NGET AI Governance Assurance</span>
+          <ShieldCheck className="size-5 shrink-0 text-primary" />
+          <span className="truncate text-xs font-semibold">
+            Automated Governance Artifacts Review System
+          </span>
         </div>
         <div className="hidden items-center gap-2 text-xs text-muted-foreground md:flex">
-          <span className="font-medium text-foreground">Smart Grid Modernisation</span>
+          <span className="font-medium text-foreground">
+            Governance Assurance Workspace
+          </span>
           <span className="text-border">|</span>
-          <span>Programme SCADA Migration</span>
+          <span>Concept POC · Simulated AI</span>
         </div>
 
         <div className="ml-auto flex items-center gap-2">

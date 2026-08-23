@@ -53,8 +53,15 @@ export function VerdictBadge({
 }
 
 const STATUS_STYLE: Record<AssessmentStatus, string> = {
+  draft: "bg-muted text-muted-foreground border-border",
   "in-review": "bg-info/10 text-info border-info/30",
   completed: "bg-success/10 text-success border-success/30",
+};
+
+const STATUS_LABEL: Record<AssessmentStatus, string> = {
+  draft: "Draft",
+  "in-review": "In Review",
+  completed: "Completed",
 };
 
 export function StatusBadge({ status }: { status: AssessmentStatus }) {
@@ -65,7 +72,17 @@ export function StatusBadge({ status }: { status: AssessmentStatus }) {
         STATUS_STYLE[status],
       )}
     >
-      {status === "in-review" ? "In Review" : "Completed"}
+      {STATUS_LABEL[status]}
+    </span>
+  );
+}
+
+// Shown wherever an outcome would appear for a draft that has not been run yet.
+export function NotAssessedBadge() {
+  return (
+    <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground">
+      <span className="size-1.5 rounded-full bg-muted-foreground/50" />
+      Not Assessed
     </span>
   );
 }
