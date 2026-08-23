@@ -10,6 +10,7 @@ import {
   ShieldCheck,
   Workflow,
 } from "lucide-react";
+import type { ReactNode } from "react";
 import { PageHeader } from "@/components/page-header";
 
 export const Route = createFileRoute("/future")({
