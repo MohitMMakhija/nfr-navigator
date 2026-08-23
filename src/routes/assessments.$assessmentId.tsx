@@ -72,7 +72,7 @@ function AssessmentDetailPage() {
         actions={
           <>
             {assessment.isPocDemo && (
-              <span className="rounded-full border border-warning/40 bg-warning/15 px-2.5 py-0.5 text-[11px] font-semibold text-warning-foreground uppercase">
+              <span className="rounded-full border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-[11px] font-semibold text-primary uppercase">
                 POC Demo Assessment
               </span>
             )}
@@ -98,8 +98,8 @@ function AssessmentDetailPage() {
             />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            Conditional: the project may proceed once the high-severity findings below
-            are addressed.
+            Conditional Alignment: the project is broadly aligned once the
+            high-severity findings below are addressed.
           </p>
         </div>
         <div className="grid grid-cols-3 gap-3 lg:col-span-2">
