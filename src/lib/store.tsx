@@ -8,17 +8,18 @@ import {
   type ReactNode,
 } from "react";
 import type { AssessmentRecord } from "./mock/types";
-import { computeNextRef, seedAssessment } from "./mock/assessments";
+import { computeNextRef, seedAssessments } from "./mock/assessments";
+import { profileForFramework } from "./mock/profiles";
 
 /*
  * Demo app state: the list of governance assessments created in this
  * browser. Persisted to localStorage so the demo survives refreshes;
- * Reset Demo restores the single seeded POC demo assessment.
+ * Reset Demo restores the three seeded POC demo assessments.
  * POC only — no backend, no real AI, no uploaded file content leaves
  * the browser (only file metadata is kept).
  */
 
-const STORAGE_KEY = "nget-governance-poc-v2";
+const STORAGE_KEY = "nget-governance-poc-v3";
 
 interface DemoState {
   assessments: AssessmentRecord[];
@@ -28,13 +29,13 @@ interface DemoContextValue extends DemoState {
   hydrated: boolean;
   nextRef: string;
   createAssessment: (
-    input: Omit<AssessmentRecord, "ref" | "createdAt">,
+    input: Omit<AssessmentRecord, "ref" | "createdAt" | "profileId" | "status">,
   ) => AssessmentRecord;
   resetDemo: () => void;
 }
 
 const DEFAULT_STATE: DemoState = {
-  assessments: [seedAssessment],
+  assessments: seedAssessments,
 };
 
 const DemoContext = createContext<DemoContextValue | null>(null);
@@ -70,10 +71,17 @@ export function DemoProvider({ children }: { children: ReactNode }) {
   const nextRef = computeNextRef(state.assessments);
 
   const createAssessment = useCallback(
-    (input: Omit<AssessmentRecord, "ref" | "createdAt">): AssessmentRecord => {
+    (
+      input: Omit<AssessmentRecord, "ref" | "createdAt" | "profileId" | "status">,
+    ): AssessmentRecord => {
+      // Deterministic simulated result: the selected framework fixes the
+      // profile the run resolves to, so results are stable across refreshes.
+      const profile = profileForFramework(input.frameworkId);
       const record: AssessmentRecord = {
         ...input,
         ref: computeNextRef(state.assessments),
+        profileId: profile.id,
+        status: "in-review",
         createdAt: new Date().toISOString(),
       };
       setState((s) => ({ assessments: [...s.assessments, record] }));

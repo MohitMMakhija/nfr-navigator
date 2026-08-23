@@ -61,8 +61,9 @@ function SettingsPage() {
             </li>
             <li className="flex gap-2">
               <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
-              Assessment results (72% Conditional Alignment, findings and recommendations) are
-              fixed illustrative data to demonstrate the concept.
+              Assessment results (scores, outcomes, findings and recommendations) are
+              fixed illustrative data to demonstrate the concept — deterministic
+              per framework, never random.
             </li>
           </ul>
         </section>
@@ -74,8 +75,8 @@ function SettingsPage() {
             survives refreshes. There are currently{" "}
             <span className="font-medium text-foreground">{assessments.length}</span>{" "}
             assessment{assessments.length === 1 ? "" : "s"} in this workspace. Resetting
-            clears them and restores the single seeded POC demo assessment
-            (AGR-2026-001).
+            clears them and restores the three seeded POC demo assessments
+            (AGR-2026-001 to AGR-2026-003).
           </p>
           <AlertDialog>
             <AlertDialogTrigger asChild>
@@ -89,7 +90,7 @@ function SettingsPage() {
                 <AlertDialogTitle>Reset the demo?</AlertDialogTitle>
                 <AlertDialogDescription>
                   This removes all assessments created in this browser and restores the
-                  seeded POC demo assessment (AGR-2026-001).
+                  three seeded POC demo assessments (AGR-2026-001 to AGR-2026-003).
                 </AlertDialogDescription>
               </AlertDialogHeader>
               <AlertDialogFooter>

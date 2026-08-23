@@ -18,8 +18,8 @@ import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { DemoBadge, VerdictBadge } from "@/components/status";
 import { demoArtefacts, sampleReport } from "@/lib/mock/artefacts";
-import { mockResult } from "@/lib/mock/findings";
 import { frameworks, getFramework } from "@/lib/mock/frameworks";
+import { profileForFramework } from "@/lib/mock/profiles";
 import type { ArtefactKind, ArtefactMeta } from "@/lib/mock/types";
 import { useDemo } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -94,6 +94,9 @@ function NewAssessmentWizard() {
   const { nextRef, createAssessment } = useDemo();
 
   const framework = getFramework(frameworkId);
+  // Deterministic simulated result for the selected framework — the same
+  // profile the persisted assessment will resolve to everywhere in the app.
+  const runResult = profileForFramework(frameworkId).result;
   const allIndexed = files.length > 0 && files.every((f) => f.status === "indexed");
   const canNext =
     step === 0
@@ -619,9 +622,9 @@ function NewAssessmentWizard() {
                     <span className="text-sm font-semibold text-foreground">
                       Assessment complete
                     </span>
-                    <VerdictBadge verdict={mockResult.verdict} />
+                    <VerdictBadge verdict={runResult.verdict} category={runResult.category} />
                     <span className="font-mono text-sm font-semibold text-foreground">
-                      {mockResult.overall}%
+                      {runResult.overall}%
                     </span>
                     <span className="text-xs text-muted-foreground">
                       Opening results…

@@ -1,9 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { FileArchive, FileSpreadsheet, FileText } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
-import { DemoBadge, SeverityBadge, VerdictBadge } from "@/components/status";
+import { DemoBadge, SeverityBadge, StatusBadge, VerdictBadge } from "@/components/status";
 import { getFramework } from "@/lib/mock/frameworks";
-import { mockResult } from "@/lib/mock/findings";
+import { resultForAssessment } from "@/lib/mock/profiles";
 import type { ArtefactKind } from "@/lib/mock/types";
 import { useDemo } from "@/lib/store";
 
@@ -59,6 +59,8 @@ function AssessmentDetailPage() {
   }
 
   const framework = getFramework(assessment.frameworkId);
+  const result = resultForAssessment(assessment);
+  const highCount = result.findings.filter((f) => f.severity === "high").length;
 
   return (
     <div className="mx-auto max-w-[1000px]">
@@ -71,6 +73,7 @@ function AssessmentDetailPage() {
         subtitle={`${assessment.projectName} · ${assessment.programme}. Simulated AI output — illustrative only.`}
         actions={
           <>
+            <StatusBadge status={assessment.status} />
             {assessment.isPocDemo && (
               <span className="rounded-full border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-[11px] font-semibold text-primary uppercase">
                 POC Demo Assessment
@@ -88,26 +91,31 @@ function AssessmentDetailPage() {
             Overall result
           </div>
           <div className="mt-2 flex items-end gap-3">
-            <span className="text-4xl font-bold text-foreground">{mockResult.overall}%</span>
-            <VerdictBadge verdict={mockResult.verdict} />
+            <span className="text-4xl font-bold text-foreground">{result.overall}%</span>
+            <VerdictBadge verdict={result.verdict} category={result.category} />
           </div>
           <div className="mt-3 h-2 overflow-hidden rounded-full bg-muted">
             <div
-              className="h-full rounded-full bg-warning"
-              style={{ width: `${mockResult.overall}%` }}
+              className={
+                result.category === "aligned"
+                  ? "h-full rounded-full bg-success"
+                  : result.category === "gaps"
+                    ? "h-full rounded-full bg-destructive"
+                    : "h-full rounded-full bg-warning"
+              }
+              style={{ width: `${result.overall}%` }}
             />
           </div>
-          <p className="mt-3 text-xs text-muted-foreground">
-            Conditional Alignment: the project is broadly aligned once the
-            high-severity findings below are addressed.
+          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+            {result.narrative}
           </p>
         </div>
         <div className="grid grid-cols-3 gap-3 lg:col-span-2">
           {(
             [
-              ["Meets expectations", mockResult.compliant, "text-success", "bg-success/10 border-success/30"],
-              ["Needs attention", mockResult.partial, "text-warning-foreground", "bg-warning/15 border-warning/40"],
-              ["Gap identified", mockResult.gaps, "text-destructive", "bg-destructive/10 border-destructive/30"],
+              ["Meets expectations", result.compliant, "text-success", "bg-success/10 border-success/30"],
+              ["Needs attention", result.partial, "text-warning-foreground", "bg-warning/15 border-warning/40"],
+              ["Gap identified", result.gaps, "text-destructive", "bg-destructive/10 border-destructive/30"],
             ] as const
           ).map(([label, value, text, box]) => (
             <div
@@ -119,11 +127,12 @@ function AssessmentDetailPage() {
             </div>
           ))}
           <div className="col-span-3 rounded-lg border border-border bg-muted/30 px-4 py-2.5 text-xs text-muted-foreground">
-            {mockResult.compliant + mockResult.partial + mockResult.gaps} policy
-            requirements assessed against{" "}
+            {result.compliant + result.partial + result.gaps} policy requirements
+            assessed against{" "}
             <span className="font-medium text-foreground">{framework?.name}</span> ·{" "}
             {assessment.artefacts.length} artefact
-            {assessment.artefacts.length === 1 ? "" : "s"} reviewed · PM{" "}
+            {assessment.artefacts.length === 1 ? "" : "s"} reviewed ·{" "}
+            {result.findings.length} findings ({highCount} high) · PM{" "}
             {assessment.projectManager} · Sponsor {assessment.sponsor}
           </div>
         </div>
@@ -133,7 +142,7 @@ function AssessmentDetailPage() {
       <div className="mb-6 rounded-xl border border-border bg-card">
         <div className="flex items-center justify-between border-b border-border px-5 py-3">
           <h2 className="text-sm font-semibold text-foreground">
-            Findings & recommended actions ({mockResult.findings.length})
+            Findings & recommended actions ({result.findings.length})
           </h2>
           <Link
             to="/findings"
@@ -143,7 +152,7 @@ function AssessmentDetailPage() {
           </Link>
         </div>
         <ul className="divide-y divide-border">
-          {mockResult.findings.map((f) => (
+          {result.findings.map((f) => (
             <li key={f.id} className="px-5 py-4">
               <div className="flex flex-wrap items-center gap-2">
                 <span className="font-mono text-xs font-semibold text-muted-foreground">

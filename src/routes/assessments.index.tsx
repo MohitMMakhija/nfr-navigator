@@ -1,9 +1,9 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { ClipboardCheck, Plus } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
-import { DemoBadge, VerdictBadge } from "@/components/status";
+import { DemoBadge, StatusBadge, VerdictBadge } from "@/components/status";
 import { getFramework } from "@/lib/mock/frameworks";
-import { mockResult } from "@/lib/mock/findings";
+import { resultForAssessment } from "@/lib/mock/profiles";
 import { useDemo } from "@/lib/store";
 
 export const Route = createFileRoute("/assessments/")({
@@ -63,58 +63,60 @@ function AssessmentsPage() {
               <th className="hidden px-5 py-3 font-medium md:table-cell">Programme</th>
               <th className="hidden px-5 py-3 font-medium lg:table-cell">Framework</th>
               <th className="px-5 py-3 font-medium">Status</th>
-              <th className="px-5 py-3 font-medium">Result</th>
+              <th className="px-5 py-3 font-medium">Score</th>
+              <th className="px-5 py-3 font-medium">Outcome</th>
               <th className="hidden px-5 py-3 font-medium sm:table-cell">Updated</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {hydrated &&
-              rows.map((a) => (
-                <tr
-                  key={a.ref}
-                  onClick={() =>
-                    navigate({
-                      to: "/assessments/$assessmentId",
-                      params: { assessmentId: a.ref },
-                    })
-                  }
-                  className="cursor-pointer transition-colors hover:bg-muted/40"
-                >
-                  <td className="px-5 py-3.5">
-                    <span className="font-mono text-xs font-semibold text-foreground">
-                      {a.ref}
-                    </span>
-                    {a.isPocDemo && (
-                      <span className="mt-1 block w-fit rounded-full border border-primary/20 bg-primary/5 px-2 py-0.5 text-[10px] font-semibold text-primary uppercase">
-                        POC Demo Assessment
+              rows.map((a) => {
+                const result = resultForAssessment(a);
+                return (
+                  <tr
+                    key={a.ref}
+                    onClick={() =>
+                      navigate({
+                        to: "/assessments/$assessmentId",
+                        params: { assessmentId: a.ref },
+                      })
+                    }
+                    className="cursor-pointer transition-colors hover:bg-muted/40"
+                  >
+                    <td className="px-5 py-3.5">
+                      <span className="font-mono text-xs font-semibold text-foreground">
+                        {a.ref}
                       </span>
-                    )}
-                  </td>
-                  <td className="px-5 py-3.5 font-medium text-foreground">
-                    {a.projectName}
-                  </td>
-                  <td className="hidden px-5 py-3.5 text-xs text-muted-foreground md:table-cell">
-                    {a.programme}
-                  </td>
-                  <td className="hidden px-5 py-3.5 text-xs text-muted-foreground lg:table-cell">
-                    {getFramework(a.frameworkId)?.name ?? a.frameworkId}
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <span className="rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success">
-                      Complete
-                    </span>
-                  </td>
-                  <td className="px-5 py-3.5">
-                    <span className="mr-2 font-mono text-xs text-muted-foreground">
-                      {mockResult.overall}%
-                    </span>
-                    <VerdictBadge verdict={mockResult.verdict} />
-                  </td>
-                  <td className="hidden px-5 py-3.5 text-xs text-muted-foreground sm:table-cell">
-                    {formatDate(a.createdAt)}
-                  </td>
-                </tr>
-              ))}
+                      {a.isPocDemo && (
+                        <span className="mt-1 block w-fit rounded-full border border-primary/20 bg-primary/5 px-2 py-0.5 text-[10px] font-semibold text-primary uppercase">
+                          POC Demo Assessment
+                        </span>
+                      )}
+                    </td>
+                    <td className="px-5 py-3.5 font-medium text-foreground">
+                      {a.projectName}
+                    </td>
+                    <td className="hidden px-5 py-3.5 text-xs text-muted-foreground md:table-cell">
+                      {a.programme}
+                    </td>
+                    <td className="hidden px-5 py-3.5 text-xs text-muted-foreground lg:table-cell">
+                      {getFramework(a.frameworkId)?.name ?? a.frameworkId}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <StatusBadge status={a.status} />
+                    </td>
+                    <td className="px-5 py-3.5 font-mono text-xs text-foreground">
+                      {result.overall}%
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <VerdictBadge verdict={result.verdict} category={result.category} />
+                    </td>
+                    <td className="hidden px-5 py-3.5 text-xs text-muted-foreground sm:table-cell">
+                      {formatDate(a.createdAt)}
+                    </td>
+                  </tr>
+                );
+              })}
           </tbody>
         </table>
         {!hydrated && (

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SplatRouteImport } from './routes/$'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as FindingsRouteImport } from './routes/findings'
 import { Route as FrameworksRouteImport } from './routes/frameworks'
 import { Route as FutureRouteImport } from './routes/future'
@@ -29,6 +30,11 @@ const IndexRoute = IndexRouteImport.update({
 const SplatRoute = SplatRouteImport.update({
   id: '/$',
   path: '/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FindingsRoute = FindingsRouteImport.update({
@@ -80,6 +86,7 @@ const FrameworksFrameworkIdRoute = FrameworksFrameworkIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/about': typeof AboutRoute
   '/findings': typeof FindingsRoute
   '/frameworks': typeof FrameworksRouteWithChildren
   '/future': typeof FutureRoute
@@ -93,6 +100,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/about': typeof AboutRoute
   '/findings': typeof FindingsRoute
   '/future': typeof FutureRoute
   '/settings': typeof SettingsRoute
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
+  '/about': typeof AboutRoute
   '/findings': typeof FindingsRoute
   '/frameworks': typeof FrameworksRouteWithChildren
   '/future': typeof FutureRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/$'
+    | '/about'
     | '/findings'
     | '/frameworks'
     | '/future'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/$'
+    | '/about'
     | '/findings'
     | '/future'
     | '/settings'
@@ -146,6 +157,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/$'
+    | '/about'
     | '/findings'
     | '/frameworks'
     | '/future'
@@ -160,6 +172,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
+  AboutRoute: typeof AboutRoute
   FindingsRoute: typeof FindingsRoute
   FrameworksRoute: typeof FrameworksRouteWithChildren
   FutureRoute: typeof FutureRoute
@@ -183,6 +196,13 @@ declare module '@tanstack/react-router' {
       path: '/$'
       fullPath: '/$'
       preLoaderRoute: typeof SplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/findings': {
@@ -268,6 +288,7 @@ const FrameworksRouteWithChildren = FrameworksRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
+  AboutRoute: AboutRoute,
   FindingsRoute: FindingsRoute,
   FrameworksRoute: FrameworksRouteWithChildren,
   FutureRoute: FutureRoute,
