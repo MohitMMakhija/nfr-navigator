@@ -33,12 +33,12 @@ export function DemoBadge({ className }: { className?: string }) {
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border border-warning/50 bg-warning/15 px-2.5 py-0.5 text-[11px] font-semibold tracking-wide text-warning-foreground uppercase",
+        "inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-[11px] font-semibold tracking-wide text-primary uppercase",
         className,
       )}
     >
-      <span className="size-1.5 animate-pulse rounded-full bg-warning" />
-      POC Demo Mode
+      <span className="size-1.5 animate-pulse rounded-full bg-brand-mid" />
+      POC Demo · Simulated AI
     </span>
   );
 }

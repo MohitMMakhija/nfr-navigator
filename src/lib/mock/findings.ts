@@ -4,7 +4,7 @@ import type { AssessmentResult } from "./types";
 // assessment in this POC — clearly labelled POC Demo Mode in the UI.
 export const mockResult: AssessmentResult = {
   overall: 72,
-  verdict: "Conditional",
+  verdict: "Conditional Alignment",
   compliant: 18,
   partial: 7,
   gaps: 5,

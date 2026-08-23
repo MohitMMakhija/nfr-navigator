@@ -61,7 +61,7 @@ function SettingsPage() {
             </li>
             <li className="flex gap-2">
               <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
-              Assessment results (72% Conditional, findings and recommendations) are
+              Assessment results (72% Conditional Alignment, findings and recommendations) are
               fixed illustrative data to demonstrate the concept.
             </li>
           </ul>

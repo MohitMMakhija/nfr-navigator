@@ -16,8 +16,9 @@ import {
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
-import { DemoBadge } from "@/components/status";
+import { DemoBadge, VerdictBadge } from "@/components/status";
 import { demoArtefacts, sampleReport } from "@/lib/mock/artefacts";
+import { mockResult } from "@/lib/mock/findings";
 import { frameworks, getFramework } from "@/lib/mock/frameworks";
 import type { ArtefactKind, ArtefactMeta } from "@/lib/mock/types";
 import { useDemo } from "@/lib/store";
@@ -52,10 +53,9 @@ const FILE_ICON: Record<ArtefactKind, React.ReactNode> = {
 
 const RUN_STEPS = [
   "Reviewing project artefacts",
-  "Reading documents",
   "Identifying applicable policies",
-  "Assessing requirements",
-  "Identifying gaps",
+  "Assessing governance requirements",
+  "Identifying potential gaps",
   "Generating recommendations",
 ];
 
@@ -64,12 +64,13 @@ interface UploadItem extends ArtefactMeta {
   status: UploadStatus;
 }
 
-function kindFor(name: string): ArtefactKind {
+function kindFor(name: string): ArtefactKind | null {
   const ext = name.split(".").pop()?.toLowerCase() ?? "";
   if (ext === "pdf") return "pdf";
   if (ext === "doc" || ext === "docx") return "docx";
   if (ext === "xls" || ext === "xlsx") return "xlsx";
-  return "zip";
+  if (ext === "zip") return "zip";
+  return null;
 }
 
 const ACCEPT = ".pdf,.doc,.docx,.xls,.xlsx,.zip";
@@ -83,8 +84,10 @@ function NewAssessmentWizard() {
   const [frameworkId, setFrameworkId] = useState("arch-gov");
   const [files, setFiles] = useState<UploadItem[]>([]);
   const [dragging, setDragging] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [runStep, setRunStep] = useState(0);
+  const [runDone, setRunDone] = useState(false);
   const fileInput = useRef<HTMLInputElement>(null);
   const counter = useRef(0);
   const navigate = useNavigate();
@@ -99,38 +102,73 @@ function NewAssessmentWizard() {
         ? allIndexed
         : true;
 
+  // Simulated local progression only — file contents never leave the browser.
+  const simulateProgress = (id: string) => {
+    window.setTimeout(
+      () =>
+        setFiles((s) =>
+          s.map((f) => (f.id === id ? { ...f, status: "processing" } : f)),
+        ),
+      800,
+    );
+    window.setTimeout(
+      () =>
+        setFiles((s) =>
+          s.map((f) => (f.id === id ? { ...f, status: "indexed" } : f)),
+        ),
+      1800,
+    );
+  };
+
   const addFiles = (list: FileList | File[]) => {
     const incoming = Array.from(list).slice(0, 10);
     if (incoming.length === 0) return;
-    const items: UploadItem[] = incoming.map((f) => {
+    const supported = incoming.filter((f) => kindFor(f.name) !== null);
+    const rejected = incoming.filter((f) => kindFor(f.name) === null);
+    if (rejected.length > 0) {
+      setUploadError(
+        `Unsupported file type: ${rejected.map((f) => f.name).join(", ")}. This POC accepts PDF, DOCX, XLSX or ZIP files only.`,
+      );
+      toast.error("Unsupported file type", {
+        description: "This POC accepts PDF, DOCX, XLSX or ZIP files only.",
+      });
+    } else {
+      setUploadError(null);
+    }
+    if (supported.length === 0) return;
+    const items: UploadItem[] = supported.map((f) => {
       counter.current += 1;
       return {
         id: `up-${Date.now()}-${counter.current}`,
         name: f.name,
         sizeMb: Math.max(0.1, Math.round((f.size / (1024 * 1024)) * 10) / 10),
-        kind: kindFor(f.name),
+        kind: kindFor(f.name) ?? "pdf",
         source: "upload",
         status: "uploading",
       };
     });
     setFiles((s) => [...s, ...items]);
-    // Simulated local progression only — file contents never leave the browser.
-    for (const item of items) {
-      window.setTimeout(
-        () =>
-          setFiles((s) =>
-            s.map((f) => (f.id === item.id ? { ...f, status: "processing" } : f)),
-          ),
-        900,
-      );
-      window.setTimeout(
-        () =>
-          setFiles((s) =>
-            s.map((f) => (f.id === item.id ? { ...f, status: "indexed" } : f)),
-          ),
-        2000,
-      );
+    for (const item of items) simulateProgress(item.id);
+  };
+
+  // Insert the pre-populated demo report — behaves identically to an upload.
+  const addDemoReport = () => {
+    if (files.some((f) => f.name === sampleReport.fileName)) {
+      toast.info("Demo SCADA report already added");
+      return;
     }
+    setUploadError(null);
+    counter.current += 1;
+    const item: UploadItem = {
+      id: `demo-report-${counter.current}`,
+      name: sampleReport.fileName,
+      sizeMb: sampleReport.sizeMb,
+      kind: "pdf",
+      source: "demo",
+      status: "uploading",
+    };
+    setFiles((s) => [...s, item]);
+    simulateProgress(item.id);
   };
 
   const addDemoArtefacts = () => {
@@ -145,11 +183,13 @@ function NewAssessmentWizard() {
       }
       return [...s, ...fresh];
     });
+    setUploadError(null);
   };
 
   const runAssessment = () => {
     if (!allIndexed || running) return;
     setRunning(true);
+    setRunDone(false);
     setRunStep(0);
     let i = 0;
     const tick = () => {
@@ -157,7 +197,12 @@ function NewAssessmentWizard() {
       if (i < RUN_STEPS.length) {
         setRunStep(i);
         window.setTimeout(tick, 750);
-      } else {
+        return;
+      }
+      // Simulated assessment complete — show the illustrative verdict briefly,
+      // then persist the assessment and open its result.
+      setRunDone(true);
+      window.setTimeout(() => {
         const record = createAssessment({
           projectName: projectName.trim(),
           programme: programme.trim(),
@@ -179,7 +224,7 @@ function NewAssessmentWizard() {
           to: "/assessments/$assessmentId",
           params: { assessmentId: record.ref },
         });
-      }
+      }, 1500);
     };
     window.setTimeout(tick, 750);
   };
@@ -305,13 +350,19 @@ function NewAssessmentWizard() {
             </div>
 
             {framework && (
-              <div className="rounded-lg border border-border bg-muted/30 p-4">
-                <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold tracking-wide text-muted-foreground uppercase">
-                  <span>Framework</span>
-                  <ChevronRight className="size-3" />
-                  <span>Applicable policies</span>
-                  <ChevronRight className="size-3" />
-                  <span>Assessment</span>
+              <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
+                <div className="flex flex-wrap items-center gap-2 text-[11px] font-semibold tracking-wide uppercase">
+                  <span className="rounded-md bg-primary px-2.5 py-1 text-primary-foreground">
+                    Framework
+                  </span>
+                  <ChevronRight className="size-3.5 text-primary" />
+                  <span className="rounded-md bg-primary/10 px-2.5 py-1 text-primary">
+                    Applicable policies
+                  </span>
+                  <ChevronRight className="size-3.5 text-primary" />
+                  <span className="rounded-md bg-primary/10 px-2.5 py-1 text-primary">
+                    Governance assessment
+                  </span>
                 </div>
                 <ul className="mt-3 space-y-2">
                   {framework.policies.map((p) => (
@@ -345,7 +396,7 @@ function NewAssessmentWizard() {
                 onClick={addDemoArtefacts}
                 className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
               >
-                <Plus className="size-3.5" /> Add demo artefacts (POC demo data)
+                <Plus className="size-3.5" /> Add 5 demo artefacts (POC demo data)
               </button>
             </div>
 
@@ -370,12 +421,20 @@ function NewAssessmentWizard() {
               <UploadCloud className="size-8" />
               <span className="text-sm font-medium">Drag & drop files here</span>
               <span className="text-xs">PDF, DOCX, XLSX or ZIP</span>
-              <button
-                onClick={() => fileInput.current?.click()}
-                className="mt-1 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
-              >
-                Browse files
-              </button>
+              <div className="mt-1 flex flex-wrap justify-center gap-2">
+                <button
+                  onClick={() => fileInput.current?.click()}
+                  className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+                >
+                  Browse files
+                </button>
+                <button
+                  onClick={addDemoReport}
+                  className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
+                >
+                  <FileText className="size-3.5" /> Use Demo SCADA Report
+                </button>
+              </div>
               <input
                 ref={fileInput}
                 type="file"
@@ -393,7 +452,13 @@ function NewAssessmentWizard() {
               </span>
             </div>
 
-            {/* Sample report */}
+            {uploadError && (
+              <p className="rounded-md border border-destructive/30 bg-destructive/5 px-3 py-2 text-xs text-destructive">
+                {uploadError}
+              </p>
+            )}
+
+            {/* Downloadable sample report */}
             <div className="flex items-center gap-3 rounded-lg border border-info/30 bg-info/5 px-4 py-3">
               <FileText className="size-5 shrink-0 text-info" />
               <div className="min-w-0 flex-1">
@@ -424,7 +489,12 @@ function NewAssessmentWizard() {
                         {f.name}
                       </div>
                       <div className="text-[11px] text-muted-foreground">
-                        {f.sizeMb} MB · {f.source === "demo" ? "POC demo data" : "Selected in this browser"}
+                        {f.kind.toUpperCase()} · {f.sizeMb} MB ·{" "}
+                        {f.source === "demo"
+                          ? f.name === sampleReport.fileName
+                            ? "POC demo report"
+                            : "POC demo data"
+                          : "Selected in this browser"}
                       </div>
                     </div>
                     {f.status === "indexed" ? (
@@ -449,10 +519,10 @@ function NewAssessmentWizard() {
               </ul>
             )}
             {files.length === 0 && (
-              <p className="text-xs text-muted-foreground">
-                Add at least one artefact (your own file or the demo artefacts) to run
-                the assessment.
-              </p>
+              <div className="rounded-lg border border-dashed border-border bg-muted/20 px-4 py-3 text-xs text-muted-foreground">
+                No artefacts yet — add at least one file (or use the demo SCADA
+                report) to run the assessment.
+              </div>
             )}
           </div>
         )}
@@ -487,22 +557,41 @@ function NewAssessmentWizard() {
                     </dd>
                   </div>
                 </dl>
-                <div className="rounded-lg border border-info/30 bg-info/5 p-4 text-sm text-info">
-                  Running the assessment plays a simulated AI review — no real
-                  analysis, indexing or storage takes place. Results are illustrative
-                  POC output.
-                </div>
+                {files.length === 0 ? (
+                  <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
+                    No artefacts added — go back to the Artefacts step and add at
+                    least one file (or the demo SCADA report) before running the
+                    assessment.
+                  </div>
+                ) : !allIndexed ? (
+                  <div className="rounded-lg border border-warning/40 bg-warning/10 px-4 py-3 text-xs text-warning-foreground">
+                    Files are still being processed — the Run button enables once
+                    every artefact shows Indexed.
+                  </div>
+                ) : (
+                  <div className="rounded-lg border border-info/30 bg-info/5 p-4 text-sm text-info">
+                    Running the assessment plays a simulated AI review — no real
+                    analysis, indexing or storage takes place. Results are
+                    illustrative POC output.
+                  </div>
+                )}
               </>
             ) : (
               <div className="space-y-3 py-2">
                 <div className="flex items-center gap-2 text-sm font-medium text-foreground">
-                  <Loader2 className="size-4 animate-spin text-primary" />
-                  Simulated assessment in progress…
+                  {runDone ? (
+                    <Check className="size-4 text-success" />
+                  ) : (
+                    <Loader2 className="size-4 animate-spin text-primary" />
+                  )}
+                  {runDone
+                    ? "Simulated assessment complete"
+                    : "Simulated assessment in progress…"}
                 </div>
                 <ol className="space-y-2">
                   {RUN_STEPS.map((label, i) => (
                     <li key={label} className="flex items-center gap-2.5 text-sm">
-                      {i < runStep ? (
+                      {runDone || i < runStep ? (
                         <span className="flex size-5 items-center justify-center rounded-full bg-success text-success-foreground">
                           <Check className="size-3" />
                         </span>
@@ -515,7 +604,9 @@ function NewAssessmentWizard() {
                       )}
                       <span
                         className={cn(
-                          i <= runStep ? "text-foreground" : "text-muted-foreground",
+                          runDone || i <= runStep
+                            ? "text-foreground"
+                            : "text-muted-foreground",
                         )}
                       >
                         {label}
@@ -523,6 +614,20 @@ function NewAssessmentWizard() {
                     </li>
                   ))}
                 </ol>
+                {runDone && (
+                  <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg border border-success/30 bg-success/5 px-4 py-3">
+                    <span className="text-sm font-semibold text-foreground">
+                      Assessment complete
+                    </span>
+                    <VerdictBadge verdict={mockResult.verdict} />
+                    <span className="font-mono text-sm font-semibold text-foreground">
+                      {mockResult.overall}%
+                    </span>
+                    <span className="text-xs text-muted-foreground">
+                      Opening results…
+                    </span>
+                  </div>
+                )}
               </div>
             )}
           </div>

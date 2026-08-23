@@ -80,13 +80,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "NGET AI Governance Assurance — POC" },
+      { title: "NGET AI Governance Assurance — Concept POC" },
       {
         name: "description",
         content:
-          "Concept demonstrator: upload project artefacts, select a governance framework, and see simulated AI findings and recommendations. Smart Grid Modernisation / SCADA Migration demo story.",
+          "AI-assisted governance assessment for project artefacts. Concept POC with simulated AI: upload artefacts, select a framework, review findings and recommendations.",
       },
-      { property: "og:title", content: "NGET AI Governance Assurance — POC" },
+      { property: "og:title", content: "NGET AI Governance Assurance — Concept POC" },
       {
         property: "og:description",
         content:

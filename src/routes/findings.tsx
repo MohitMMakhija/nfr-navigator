@@ -1,4 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ListChecks, Plus } from "lucide-react";
 import { useState } from "react";
 import { PageHeader } from "@/components/page-header";
 import { DemoBadge, SeverityBadge, VerdictBadge } from "@/components/status";
@@ -36,7 +37,26 @@ function FindingsPage() {
         actions={<DemoBadge />}
       />
 
-      {hydrated && assessment ? (
+      {!hydrated ? (
+        <p className="text-sm text-muted-foreground">Loading…</p>
+      ) : !assessment ? (
+        <div className="flex flex-col items-center rounded-xl border border-border bg-card px-5 py-14 text-center">
+          <span className="flex size-11 items-center justify-center rounded-full bg-primary/5">
+            <ListChecks className="size-5 text-primary" />
+          </span>
+          <p className="mt-3 text-sm font-semibold text-foreground">No findings yet</p>
+          <p className="mt-1 max-w-sm text-xs leading-relaxed text-muted-foreground">
+            Findings appear once a governance assessment has been run. Create an
+            assessment to see simulated findings and recommendations here.
+          </p>
+          <Link
+            to="/assessments/new"
+            className="mt-4 inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            <Plus className="size-4" /> New Assessment
+          </Link>
+        </div>
+      ) : (
         <>
           <div className="mb-5 flex flex-wrap items-center gap-3 rounded-xl border border-border bg-card px-5 py-4">
             <label
@@ -58,6 +78,9 @@ function FindingsPage() {
                 </option>
               ))}
             </select>
+            <span className="rounded-full border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-[11px] font-semibold tracking-wide text-primary uppercase">
+              AI assessment · POC simulation
+            </span>
             <span className="ml-auto flex items-center gap-2 text-xs text-muted-foreground">
               Overall
               <span className="font-mono font-semibold text-foreground">
@@ -70,17 +93,17 @@ function FindingsPage() {
           <div className="mb-5 grid grid-cols-3 gap-3">
             <div className="rounded-xl border border-success/30 bg-success/10 p-4 text-center">
               <div className="text-2xl font-bold text-success">{mockResult.compliant}</div>
-              <div className="text-xs text-muted-foreground">Compliant</div>
+              <div className="text-xs text-muted-foreground">Meets expectations</div>
             </div>
             <div className="rounded-xl border border-warning/40 bg-warning/15 p-4 text-center">
               <div className="text-2xl font-bold text-warning-foreground">
                 {mockResult.partial}
               </div>
-              <div className="text-xs text-muted-foreground">Partial</div>
+              <div className="text-xs text-muted-foreground">Needs attention</div>
             </div>
             <div className="rounded-xl border border-destructive/30 bg-destructive/10 p-4 text-center">
               <div className="text-2xl font-bold text-destructive">{mockResult.gaps}</div>
-              <div className="text-xs text-muted-foreground">Gaps</div>
+              <div className="text-xs text-muted-foreground">Gap identified</div>
             </div>
           </div>
 
@@ -120,10 +143,6 @@ function FindingsPage() {
             — illustrative only, no real AI analysis performed.
           </p>
         </>
-      ) : (
-        <p className="text-sm text-muted-foreground">
-          {hydrated ? "No assessments yet." : "Loading…"}
-        </p>
       )}
     </div>
   );

@@ -72,7 +72,7 @@ function AssessmentDetailPage() {
         actions={
           <>
             {assessment.isPocDemo && (
-              <span className="rounded-full border border-warning/40 bg-warning/15 px-2.5 py-0.5 text-[11px] font-semibold text-warning-foreground uppercase">
+              <span className="rounded-full border border-primary/20 bg-primary/5 px-2.5 py-0.5 text-[11px] font-semibold text-primary uppercase">
                 POC Demo Assessment
               </span>
             )}
@@ -98,16 +98,16 @@ function AssessmentDetailPage() {
             />
           </div>
           <p className="mt-3 text-xs text-muted-foreground">
-            Conditional: the project may proceed once the high-severity findings below
-            are addressed.
+            Conditional Alignment: the project is broadly aligned once the
+            high-severity findings below are addressed.
           </p>
         </div>
         <div className="grid grid-cols-3 gap-3 lg:col-span-2">
           {(
             [
-              ["Compliant", mockResult.compliant, "text-success", "bg-success/10 border-success/30"],
-              ["Partial", mockResult.partial, "text-warning-foreground", "bg-warning/15 border-warning/40"],
-              ["Gaps", mockResult.gaps, "text-destructive", "bg-destructive/10 border-destructive/30"],
+              ["Meets expectations", mockResult.compliant, "text-success", "bg-success/10 border-success/30"],
+              ["Needs attention", mockResult.partial, "text-warning-foreground", "bg-warning/15 border-warning/40"],
+              ["Gap identified", mockResult.gaps, "text-destructive", "bg-destructive/10 border-destructive/30"],
             ] as const
           ).map(([label, value, text, box]) => (
             <div
@@ -122,7 +122,8 @@ function AssessmentDetailPage() {
             {mockResult.compliant + mockResult.partial + mockResult.gaps} policy
             requirements assessed against{" "}
             <span className="font-medium text-foreground">{framework?.name}</span> ·{" "}
-            {assessment.artefacts.length} artefacts reviewed · PM{" "}
+            {assessment.artefacts.length} artefact
+            {assessment.artefacts.length === 1 ? "" : "s"} reviewed · PM{" "}
             {assessment.projectManager} · Sponsor {assessment.sponsor}
           </div>
         </div>
