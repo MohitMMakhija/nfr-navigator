@@ -1,22 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowRight } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
-import { RagBadge, RagStatusBadge } from "@/components/status";
-import {
-  getFramework,
-  frameworkStats,
-  policiesForFramework,
-  policyStats,
-  requirementsForPolicy,
-} from "@/lib/services/governance-service";
+import { DemoBadge } from "@/components/status";
+import { getFramework } from "@/lib/mock/frameworks";
 
 export const Route = createFileRoute("/frameworks/$frameworkId")({
   head: () => ({
     meta: [
       { title: "Framework Detail — NGET AI Governance Assurance POC" },
-      { name: "description", content: "Framework drilldown with policy and requirement posture. POC demo mode." },
+      {
+        name: "description",
+        content: "Framework detail with its applicable policies. POC demo mode.",
+      },
       { property: "og:title", content: "Framework Detail — NGET AI Governance Assurance POC" },
-      { property: "og:description", content: "Framework drilldown with policy and requirement posture." },
+      { property: "og:description", content: "Framework detail with applicable policies." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
     ],
@@ -30,90 +27,94 @@ function FrameworkDetailPage() {
 
   if (!framework) {
     return (
-      <div className="mx-auto max-w-xl py-20 text-center">
-        <h1 className="text-xl font-semibold text-foreground">Framework not found</h1>
-        <Link to="/frameworks" className="mt-4 inline-block text-sm font-medium text-primary hover:underline">
-          Back to frameworks
+      <div className="mx-auto max-w-[700px] rounded-xl border border-border bg-card p-8 text-center">
+        <h1 className="text-lg font-semibold text-foreground">Framework not found</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          This framework isn't in the POC library.
+        </p>
+        <Link
+          to="/frameworks"
+          className="mt-4 inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          Back to library
         </Link>
       </div>
     );
   }
 
-  const s = frameworkStats(framework.id);
-  const fwPolicies = policiesForFramework(framework.id);
-
   return (
-    <div className="mx-auto max-w-[1100px]">
+    <div className="mx-auto max-w-[1000px]">
       <PageHeader
         breadcrumbs={[
-          { label: "Dashboard", to: "/" },
-          { label: "Frameworks", to: "/frameworks" },
-          { label: framework.code },
+          { label: "Framework & Policy Library", to: "/frameworks" },
+          { label: framework.name },
         ]}
-        title={`${framework.name} ${framework.version}`}
-        subtitle={`${framework.description} Owner: ${framework.owner}. Source: ${framework.sourceRef}.`}
-        actions={<RagBadge color={s.rag} label={`${s.compliance}% compliant`} />}
+        title={framework.name}
+        subtitle={framework.description}
+        actions={<DemoBadge />}
       />
 
-      <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-4">
-        {[
-          ["Requirements", String(s.total)],
-          ["Compliant", String(s.counts.compliant)],
-          ["Partial", String(s.counts.partial)],
-          ["Gaps", String(s.counts.gap)],
-        ].map(([label, value]) => (
-          <div key={label} className="rounded-xl border border-border bg-card p-4">
-            <div className="text-2xl font-bold text-foreground">{value}</div>
-            <div className="text-xs text-muted-foreground">{label}</div>
+      <div className="mb-6 flex flex-wrap items-center gap-x-6 gap-y-2 rounded-xl border border-border bg-card px-5 py-4 text-xs text-muted-foreground">
+        <span>
+          <span className="font-medium text-foreground">Code:</span>{" "}
+          <span className="font-mono">{framework.code}</span>
+        </span>
+        <span>
+          <span className="font-medium text-foreground">Owner:</span> {framework.owner}
+        </span>
+        <span>
+          <span className="font-medium text-foreground">Version:</span> {framework.version}
+        </span>
+        <span className="rounded-full bg-success/10 px-2 py-0.5 font-medium text-success capitalize">
+          {framework.status}
+        </span>
+        <span className="ml-auto hidden items-center gap-1.5 font-semibold tracking-wide uppercase sm:flex">
+          Framework <ChevronRight className="size-3" /> Applicable policies{" "}
+          <ChevronRight className="size-3" /> Assessment
+        </span>
+      </div>
+
+      <h2 className="mb-3 text-sm font-semibold text-foreground">
+        Applicable policies ({framework.policies.length})
+      </h2>
+      <div className="space-y-3">
+        {framework.policies.map((p) => (
+          <div key={p.id} className="rounded-xl border border-border bg-card p-5">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="rounded border border-border bg-muted px-1.5 py-0.5 font-mono text-[11px] font-semibold text-foreground">
+                {p.id}
+              </span>
+              <span className="text-sm font-semibold text-foreground">{p.name}</span>
+              <span className="text-xs text-muted-foreground">{p.version}</span>
+              <span className="rounded-full bg-success/10 px-2 py-0.5 text-[11px] font-medium text-success capitalize">
+                {p.status}
+              </span>
+              <span className="ml-auto text-xs text-muted-foreground">
+                Owner: {p.owner}
+              </span>
+            </div>
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+              {p.purpose}
+            </p>
+            <ul className="mt-3 space-y-1.5">
+              {p.keyPoints.map((k) => (
+                <li key={k} className="flex items-start gap-2 text-xs text-foreground">
+                  <span className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary" />
+                  {k}
+                </li>
+              ))}
+            </ul>
           </div>
         ))}
       </div>
 
-      <div className="space-y-4">
-        {fwPolicies.map((p) => {
-          const ps = policyStats(p.id);
-          return (
-            <section key={p.id} className="rounded-xl border border-border bg-card p-5">
-              <div className="flex flex-wrap items-center justify-between gap-2">
-                <Link
-                  to="/policies/$policyId"
-                  params={{ policyId: p.id }}
-                  className="text-sm font-semibold text-foreground hover:text-primary"
-                >
-                  <span className="mr-2 font-mono text-xs text-muted-foreground">{p.code}</span>
-                  {p.name}
-                </Link>
-                <div className="flex items-center gap-3 text-[11px] text-muted-foreground">
-                  <span>{ps.total} reqs</span>
-                  <span className="text-success">{ps.counts.compliant} met</span>
-                  <span className="text-warning-foreground">{ps.counts.partial} partial</span>
-                  <span className="text-destructive">{ps.counts.gap} gaps</span>
-                  <RagBadge color={ps.rag} label={`${ps.compliance}%`} />
-                </div>
-              </div>
-              <ul className="mt-3 divide-y divide-border">
-                {requirementsForPolicy(p.id).map((r) => (
-                  <li key={r.id}>
-                    <Link
-                      to="/requirements/$requirementId"
-                      params={{ requirementId: r.id }}
-                      className="flex items-center gap-3 py-2 hover:bg-muted/40"
-                    >
-                      <span className="w-24 shrink-0 font-mono text-[11px] text-muted-foreground">
-                        {r.id}
-                      </span>
-                      <span className="min-w-0 flex-1 truncate text-sm text-foreground">
-                        {r.title}
-                      </span>
-                      <RagStatusBadge status={r.status} />
-                      <ArrowRight className="size-3.5 shrink-0 text-muted-foreground" />
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          );
-        })}
+      <div className="mt-6">
+        <Link
+          to="/assessments/new"
+          className="inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+        >
+          Assess a project against this framework
+        </Link>
       </div>
     </div>
   );

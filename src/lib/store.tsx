@@ -4,58 +4,37 @@ import {
   useContext,
   useEffect,
   useMemo,
-  useRef,
   useState,
   type ReactNode,
 } from "react";
-import type { AuditEvent, MitigationDecision, PersonaId } from "./mock/types";
-import { seedAudit } from "./mock/audit";
-import { personas } from "./mock/personas";
+import type { AssessmentRecord } from "./mock/types";
+import { computeNextRef, seedAssessment } from "./mock/assessments";
 
 /*
- * Demo session state: persona, human-in-the-loop decisions and the running
- * audit trail. Persisted to localStorage so the demo survives refreshes;
- * the Reset Demo action clears it back to the scripted starting point.
- * POC only — no authentication, no backend.
+ * Demo app state: the list of governance assessments created in this
+ * browser. Persisted to localStorage so the demo survives refreshes;
+ * Reset Demo restores the single seeded POC demo assessment.
+ * POC only — no backend, no real AI, no uploaded file content leaves
+ * the browser (only file metadata is kept).
  */
 
-const STORAGE_KEY = "nget-governance-poc-v1";
-
-export type ApprovalDecision = "pending" | "approved" | "rejected";
-
-interface MitigationState {
-  status: MitigationDecision;
-  note?: string | undefined;
-}
+const STORAGE_KEY = "nget-governance-poc-v2";
 
 interface DemoState {
-  persona: PersonaId;
-  mitigationDecisions: Record<string, MitigationState>;
-  approvals: Record<string, ApprovalDecision>;
-  audit: AuditEvent[];
-  assessmentCompleted: boolean;
-  summaryGenerated: number; // generation counter; 0 = not yet generated
+  assessments: AssessmentRecord[];
 }
 
 interface DemoContextValue extends DemoState {
   hydrated: boolean;
-  personaLabel: string;
-  setPersona: (p: PersonaId) => void;
-  decideMitigation: (id: string, decision: MitigationDecision, note?: string) => void;
-  decideApproval: (id: string, decision: Exclude<ApprovalDecision, "pending">, note?: string) => void;
-  markAssessmentComplete: () => void;
-  generateSummary: () => void;
-  addAudit: (e: Omit<AuditEvent, "id" | "at">) => void;
+  nextRef: string;
+  createAssessment: (
+    input: Omit<AssessmentRecord, "ref" | "createdAt">,
+  ) => AssessmentRecord;
   resetDemo: () => void;
 }
 
 const DEFAULT_STATE: DemoState = {
-  persona: "pm",
-  mitigationDecisions: {},
-  approvals: {},
-  audit: seedAudit,
-  assessmentCompleted: false,
-  summaryGenerated: 0,
+  assessments: [seedAssessment],
 };
 
 const DemoContext = createContext<DemoContextValue | null>(null);
@@ -63,12 +42,16 @@ const DemoContext = createContext<DemoContextValue | null>(null);
 export function DemoProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<DemoState>(DEFAULT_STATE);
   const [hydrated, setHydrated] = useState(false);
-  const counter = useRef(100);
 
   useEffect(() => {
     try {
       const raw = window.localStorage.getItem(STORAGE_KEY);
-      if (raw) setState({ ...DEFAULT_STATE, ...JSON.parse(raw) });
+      if (raw) {
+        const parsed = JSON.parse(raw) as DemoState;
+        if (Array.isArray(parsed.assessments) && parsed.assessments.length > 0) {
+          setState({ assessments: parsed.assessments });
+        }
+      }
     } catch {
       // ignore corrupt demo state
     }
@@ -84,83 +67,33 @@ export function DemoProvider({ children }: { children: ReactNode }) {
     }
   }, [state, hydrated]);
 
-  const addAudit = useCallback((e: Omit<AuditEvent, "id" | "at">) => {
-    counter.current += 1;
-    const event: AuditEvent = {
-      ...e,
-      id: `AUD-D${String(counter.current).padStart(4, "0")}`,
-      at: new Date().toISOString(),
-    };
-    setState((s) => ({ ...s, audit: [...s.audit, event] }));
-  }, []);
+  const nextRef = computeNextRef(state.assessments);
 
-  const actorFor = useCallback(
-    (persona: PersonaId) => personas.find((p) => p.id === persona)?.label ?? "Demo User",
-    [],
+  const createAssessment = useCallback(
+    (input: Omit<AssessmentRecord, "ref" | "createdAt">): AssessmentRecord => {
+      const record: AssessmentRecord = {
+        ...input,
+        ref: computeNextRef(state.assessments),
+        createdAt: new Date().toISOString(),
+      };
+      setState((s) => ({ assessments: [...s.assessments, record] }));
+      return record;
+    },
+    [state.assessments],
   );
 
+  const resetDemo = useCallback(() => {
+    try {
+      window.localStorage.removeItem(STORAGE_KEY);
+    } catch {
+      // ignore
+    }
+    setState(DEFAULT_STATE);
+  }, []);
+
   const value = useMemo<DemoContextValue>(
-    () => ({
-      ...state,
-      hydrated,
-      personaLabel: actorFor(state.persona),
-      setPersona: (persona) =>
-        setState((s) => ({ ...s, persona })),
-      decideMitigation: (id, decision, note) => {
-        setState((s) => ({
-          ...s,
-          mitigationDecisions: {
-            ...s.mitigationDecisions,
-            [id]: { status: decision, note },
-          },
-        }));
-        addAudit({
-          actor: actorFor(state.persona),
-          action: `Mitigation ${decision}`,
-          entity: id,
-          detail: note ? `${id} marked ${decision}. Note: ${note}` : `${id} marked ${decision}.`,
-          kind: "human",
-        });
-      },
-      decideApproval: (id, decision, note) => {
-        setState((s) => ({
-          ...s,
-          approvals: { ...s.approvals, [id]: decision },
-        }));
-        addAudit({
-          actor: actorFor(state.persona),
-          action: `Approval ${decision}`,
-          entity: id,
-          detail: note ? `${id} ${decision}. Comment: ${note}` : `${id} ${decision}.`,
-          kind: "human",
-        });
-      },
-      markAssessmentComplete: () => {
-        setState((s) =>
-          s.assessmentCompleted ? s : { ...s, assessmentCompleted: true },
-        );
-      },
-      generateSummary: () => {
-        setState((s) => ({ ...s, summaryGenerated: s.summaryGenerated + 1 }));
-        addAudit({
-          actor: actorFor(state.persona),
-          action: "Executive summary generated",
-          entity: "A-001",
-          detail: "Mock executive summary generated (POC DEMO MODE).",
-          kind: "human",
-        });
-      },
-      addAudit,
-      resetDemo: () => {
-        try {
-          window.localStorage.removeItem(STORAGE_KEY);
-        } catch {
-          // ignore
-        }
-        setState({ ...DEFAULT_STATE, audit: seedAudit });
-      },
-    }),
-    [state, hydrated, addAudit, actorFor],
+    () => ({ ...state, hydrated, nextRef, createAssessment, resetDemo }),
+    [state, hydrated, nextRef, createAssessment, resetDemo],
   );
 
   return <DemoContext.Provider value={value}>{children}</DemoContext.Provider>;

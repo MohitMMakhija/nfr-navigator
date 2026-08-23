@@ -1,162 +1,61 @@
-// Shared domain types for the NGET AI Governance Assurance POC.
-// These mirror the shapes a real integration API would return.
+export type Severity = "high" | "medium" | "low";
+export type ArtefactKind = "pdf" | "docx" | "xlsx" | "zip";
 
-export type RagStatus = "compliant" | "partial" | "gap";
-export type RagColor = "green" | "amber" | "red";
-export type Criticality = "critical" | "high" | "medium" | "low";
+export interface ArtefactMeta {
+  id: string;
+  name: string;
+  sizeMb: number;
+  kind: ArtefactKind;
+  source: "demo" | "upload";
+}
+
+export interface Policy {
+  id: string;
+  name: string;
+  version: string;
+  status: "active" | "draft";
+  owner: string;
+  purpose: string;
+  keyPoints: string[];
+}
 
 export interface Framework {
   id: string;
   code: string;
   name: string;
+  description: string;
+  owner: string;
   version: string;
-  owner: string;
-  description: string;
-  sourceRef: string;
+  status: "active" | "draft";
+  policies: Policy[];
 }
 
-export interface Policy {
+export interface Finding {
   id: string;
-  frameworkId: string;
-  code: string;
-  name: string;
-  description: string;
-  sourceRef: string;
-}
-
-export interface Requirement {
-  id: string;
-  code: string;
-  policyId: string;
-  frameworkId: string;
+  severity: Severity;
   title: string;
-  description: string;
-  criticality: Criticality;
-  status: RagStatus;
-  /** Simulated AI confidence, 0-100. POC DEMO only. */
-  confidence: number;
-  owner: string;
-  /** Static simulated AI reasoning. POC DEMO only. */
-  reasoning: string;
-  gaps: string[];
-  sourceRef: string;
-  lastAssessed: string;
-}
-
-export interface Artefact {
-  id: string;
-  name: string;
-  kind: "pdf" | "docx" | "xlsx" | "zip";
-  sizeMb: number;
-  version: string;
-  uploadedBy: string;
-  uploadedAt: string;
-  status: "uploaded" | "indexed";
-  sha: string;
-  pages: number;
-  description: string;
-}
-
-export interface Evidence {
-  id: string;
-  artefactId: string;
-  title: string;
-  excerpt: string;
-  location: string;
-  requirementIds: string[];
-  confidence: number;
-  extractedBy: string;
-}
-
-export interface Risk {
-  id: string;
-  title: string;
-  description: string;
-  frameworkCode: string;
-  requirementIds: string[];
-  likelihood: number; // 1-5
-  impact: number; // 1-5
-  owner: string;
-  status: "open" | "mitigating" | "accepted";
-  trend: "rising" | "stable" | "falling";
-  identifiedBy: string;
-  dueDate: string;
-}
-
-export type MitigationDecision =
-  | "proposed"
-  | "accepted"
-  | "modified"
-  | "rejected"
-  | "implemented";
-
-export interface Mitigation {
-  id: string;
-  riskId: string;
-  title: string;
-  action: string;
-  rationale: string;
-  effort: "S" | "M" | "L";
-  owner: string;
-  dueDate: string;
-  confidence: number;
-}
-
-export interface ApprovalItem {
-  id: string;
-  title: string;
-  type: "stage-gate" | "risk-treatment" | "summary" | "risk-acceptance";
-  requestedBy: string;
-  requestedAt: string;
-  context: string;
-  linkedIds: string[];
-}
-
-export interface AuditEvent {
-  id: string;
-  at: string;
-  actor: string;
-  action: string;
-  entity: string;
+  policyRef: string;
   detail: string;
-  kind: "ai" | "human" | "system";
+  recommendation: string;
 }
 
-export type PersonaId = "pm" | "compliance" | "architect" | "pmo" | "exec";
-
-export type DashboardWidget =
-  | "kpis"
-  | "frameworks"
-  | "risks"
-  | "matrix"
-  | "approvals"
-  | "activity"
-  | "gate"
-  | "artefacts"
-  | "value";
-
-export interface Persona {
-  id: PersonaId;
-  label: string;
-  role: string;
-  focus: string;
-  widgets: DashboardWidget[];
+export interface AssessmentResult {
+  overall: number;
+  verdict: string;
+  compliant: number;
+  partial: number;
+  gaps: number;
+  findings: Finding[];
 }
 
-export interface AssessmentStep {
-  n: number;
-  key: string;
-  name: string;
-  description: string;
-  durationMs: number;
-  stats: string[];
-}
-
-export interface TraceEntry {
-  step: number;
-  at: string;
-  event: string;
-  detail: string;
-  tokensIn: number;
-  tokensOut: number;
+export interface AssessmentRecord {
+  ref: string;
+  projectName: string;
+  programme: string;
+  projectManager: string;
+  sponsor: string;
+  frameworkId: string;
+  createdAt: string;
+  artefacts: ArtefactMeta[];
+  isPocDemo?: boolean;
 }

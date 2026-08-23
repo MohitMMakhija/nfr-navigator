@@ -84,13 +84,13 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         name: "description",
         content:
-          "AI-assisted project governance, compliance and risk assessment for Smart Grid Modernisation / TP500. Interactive POC demo with simulated AI.",
+          "Concept demonstrator: upload project artefacts, select a governance framework, and see simulated AI findings and recommendations. Smart Grid Modernisation / SCADA Migration demo story.",
       },
       { property: "og:title", content: "NGET AI Governance Assurance — POC" },
       {
         property: "og:description",
         content:
-          "AI-assisted project governance, compliance and risk assessment. Interactive POC demo.",
+          "Upload artefacts → select framework → simulated AI assessment → findings & recommendations. POC demo.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
