@@ -8,16 +8,15 @@ import {
   FileSpreadsheet,
   FileText,
   Loader2,
-  Plus,
   Sparkles,
   UploadCloud,
   X,
 } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { PageHeader } from "@/components/page-header";
 import { DemoBadge, VerdictBadge } from "@/components/status";
-import { demoArtefacts, sampleReport } from "@/lib/mock/artefacts";
+import { sampleReport } from "@/lib/mock/artefacts";
 import { frameworks, getFramework } from "@/lib/mock/frameworks";
 import { profileForFramework } from "@/lib/mock/profiles";
 import type { ArtefactKind, ArtefactMeta } from "@/lib/mock/types";
@@ -25,15 +24,18 @@ import { useDemo } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/assessments/new")({
+  validateSearch: (search: Record<string, unknown>): { ref?: string } => ({
+    ref: typeof search.ref === "string" ? search.ref : undefined,
+  }),
   head: () => ({
     meta: [
-      { title: "New Assessment — Automated Governance Artifacts Review System POC" },
+      { title: "New Governance Assessment — Automated Governance Artifacts Review System POC" },
       {
         name: "description",
         content:
           "Configure and run a simulated governance assessment: project details, framework, artefacts, review & run. POC demo mode.",
       },
-      { property: "og:title", content: "New Assessment — Automated Governance Artifacts Review System POC" },
+      { property: "og:title", content: "New Governance Assessment — Automated Governance Artifacts Review System POC" },
       { property: "og:description", content: "Configure and run a simulated governance assessment." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -75,35 +77,110 @@ function kindFor(name: string): ArtefactKind | null {
 
 const ACCEPT = ".pdf,.doc,.docx,.xls,.xlsx,.zip";
 
+function stripStatus(files: UploadItem[]): ArtefactMeta[] {
+  return files.map(({ id, name, sizeMb, kind, source }) => ({
+    id,
+    name,
+    sizeMb,
+    kind,
+    source,
+  }));
+}
+
 function NewAssessmentWizard() {
+  const { ref: searchRef } = Route.useSearch();
+  const { hydrated, assessments, createDraft, updateDraft, completeAssessment } =
+    useDemo();
+  const navigate = useNavigate();
+  const draft = assessments.find((a) => a.ref === searchRef);
+
   const [step, setStep] = useState(0);
-  const [projectName, setProjectName] = useState("Smart Grid Modernisation");
-  const [programme, setProgramme] = useState("SCADA Migration");
-  const [projectManager, setProjectManager] = useState("Mohit M Makhija");
-  const [sponsor, setSponsor] = useState("Siobhan Edgar");
-  const [frameworkId, setFrameworkId] = useState("arch-gov");
+  const [projectName, setProjectName] = useState("");
+  const [programme, setProgramme] = useState("");
+  const [projectManager, setProjectManager] = useState("");
+  const [sponsor, setSponsor] = useState("");
+  const [frameworkId, setFrameworkId] = useState("");
   const [files, setFiles] = useState<UploadItem[]>([]);
   const [dragging, setDragging] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [running, setRunning] = useState(false);
   const [runStep, setRunStep] = useState(0);
   const [runDone, setRunDone] = useState(false);
+  const [syncedRef, setSyncedRef] = useState<string | null>(null);
   const fileInput = useRef<HTMLInputElement>(null);
   const counter = useRef(0);
-  const navigate = useNavigate();
-  const { nextRef, createAssessment } = useDemo();
+  const ensuring = useRef(false);
 
-  const framework = getFramework(frameworkId);
-  // Deterministic simulated result for the selected framework — the same
-  // profile the persisted assessment will resolve to everywhere in the app.
-  const runResult = profileForFramework(frameworkId).result;
+  // "+ New Assessment" creates the draft up front and lands here with its
+  // ref. Direct visits (or stale refs after a demo reset) get a fresh draft;
+  // already-assessed refs open their result page instead.
+  useEffect(() => {
+    if (!hydrated || ensuring.current) return;
+    const rec = searchRef ? assessments.find((a) => a.ref === searchRef) : undefined;
+    if (rec && rec.status === "draft") return;
+    ensuring.current = true;
+    if (rec) {
+      navigate({
+        to: "/assessments/$assessmentId",
+        params: { assessmentId: rec.ref },
+        replace: true,
+      });
+      return;
+    }
+    const d = createDraft();
+    navigate({ to: "/assessments/new", search: { ref: d.ref }, replace: true });
+  }, [hydrated, searchRef, assessments, createDraft, navigate]);
+
+  // Copy the persisted draft into the form once it resolves (refresh-safe).
+  if (draft && syncedRef !== draft.ref) {
+    setSyncedRef(draft.ref);
+    setProjectName(draft.projectName);
+    setProgramme(draft.programme);
+    setProjectManager(draft.projectManager);
+    setSponsor(draft.sponsor);
+    setFrameworkId(draft.frameworkId);
+    setFiles(draft.artefacts.map((a) => ({ ...a, status: "indexed" as UploadStatus })));
+  }
+
+  const framework = frameworkId ? getFramework(frameworkId) : undefined;
+  // Deterministic simulated result for the selected framework — only shown
+  // after the run, and only persisted to the record at that point.
+  const runResult = frameworkId ? profileForFramework(frameworkId).result : null;
   const allIndexed = files.length > 0 && files.every((f) => f.status === "indexed");
+
+  const missing: string[] = [];
+  if (!projectName.trim()) missing.push("a project name");
+  if (!programme.trim()) missing.push("a programme");
+  if (!projectManager.trim()) missing.push("a project manager");
+  if (!sponsor.trim()) missing.push("a sponsor");
+  if (!frameworkId) missing.push("a framework");
+  if (files.length === 0) missing.push("at least one artefact");
+  const canRun = missing.length === 0 && allIndexed;
+
   const canNext =
     step === 0
       ? projectName.trim().length > 0
-      : step === 3
-        ? allIndexed
-        : true;
+      : step === 1
+        ? frameworkId !== ""
+        : step === 3
+          ? canRun
+          : true;
+
+  if (!hydrated || !draft || draft.status !== "draft") {
+    return (
+      <div className="mx-auto max-w-[900px]">
+        <p className="text-sm text-muted-foreground">Preparing draft assessment…</p>
+      </div>
+    );
+  }
+
+  const persist = (patch: Parameters<typeof updateDraft>[1]) =>
+    updateDraft(draft.ref, patch);
+
+  const applyFiles = (next: UploadItem[]) => {
+    setFiles(next);
+    persist({ artefacts: stripStatus(next) });
+  };
 
   // Simulated local progression only — file contents never leave the browser.
   const simulateProgress = (id: string) => {
@@ -116,9 +193,11 @@ function NewAssessmentWizard() {
     );
     window.setTimeout(
       () =>
-        setFiles((s) =>
-          s.map((f) => (f.id === id ? { ...f, status: "indexed" } : f)),
-        ),
+        setFiles((s) => {
+          const next = s.map((f) => (f.id === id ? { ...f, status: "indexed" as UploadStatus } : f));
+          persist({ artefacts: stripStatus(next) });
+          return next;
+        }),
       1800,
     );
   };
@@ -150,7 +229,7 @@ function NewAssessmentWizard() {
         status: "uploading",
       };
     });
-    setFiles((s) => [...s, ...items]);
+    applyFiles([...files, ...items]);
     for (const item of items) simulateProgress(item.id);
   };
 
@@ -170,27 +249,12 @@ function NewAssessmentWizard() {
       source: "demo",
       status: "uploading",
     };
-    setFiles((s) => [...s, item]);
+    applyFiles([...files, item]);
     simulateProgress(item.id);
   };
 
-  const addDemoArtefacts = () => {
-    setFiles((s) => {
-      const existing = new Set(s.map((f) => f.name));
-      const fresh = demoArtefacts
-        .filter((d) => !existing.has(d.name))
-        .map((d) => ({ ...d, status: "indexed" as UploadStatus }));
-      if (fresh.length === 0) {
-        toast.info("Demo artefacts already added");
-        return s;
-      }
-      return [...s, ...fresh];
-    });
-    setUploadError(null);
-  };
-
   const runAssessment = () => {
-    if (!allIndexed || running) return;
+    if (!canRun || running) return;
     setRunning(true);
     setRunDone(false);
     setRunStep(0);
@@ -202,30 +266,24 @@ function NewAssessmentWizard() {
         window.setTimeout(tick, 750);
         return;
       }
-      // Simulated assessment complete — show the illustrative verdict briefly,
-      // then persist the assessment and open its result.
+      // Simulated assessment complete — only now does the draft receive its
+      // deterministic framework-based result and leave Draft status.
       setRunDone(true);
       window.setTimeout(() => {
-        const record = createAssessment({
+        const record = completeAssessment(draft.ref, {
           projectName: projectName.trim(),
           programme: programme.trim(),
           projectManager: projectManager.trim(),
           sponsor: sponsor.trim(),
           frameworkId,
-          artefacts: files.map(({ id, name, sizeMb, kind, source }) => ({
-            id,
-            name,
-            sizeMb,
-            kind,
-            source,
-          })),
+          artefacts: stripStatus(files),
         });
         toast.success("Assessment complete (simulated)", {
-          description: `${record.ref} created — results are illustrative POC output.`,
+          description: `${record?.ref ?? draft.ref} assessed — results are illustrative POC output.`,
         });
         navigate({
           to: "/assessments/$assessmentId",
-          params: { assessmentId: record.ref },
+          params: { assessmentId: draft.ref },
         });
       }, 1500);
     };
@@ -235,8 +293,11 @@ function NewAssessmentWizard() {
   return (
     <div className="mx-auto max-w-[900px]">
       <PageHeader
-        breadcrumbs={[{ label: "Assessments", to: "/assessments" }, { label: "New Assessment" }]}
-        title="New governance assessment"
+        breadcrumbs={[
+          { label: "Assessments", to: "/assessments" },
+          { label: "New Governance Assessment" },
+        ]}
+        title="New Governance Assessment"
         subtitle="Upload artefacts, choose a framework, and run a simulated AI assessment. No real AI, storage or document processing takes place."
         actions={<DemoBadge />}
       />
@@ -278,20 +339,24 @@ function NewAssessmentWizard() {
             <div className="grid gap-4 sm:grid-cols-2">
               {(
                 [
-                  ["Project name", projectName, setProjectName],
-                  ["Programme", programme, setProgramme],
-                  ["Project manager", projectManager, setProjectManager],
-                  ["Sponsor", sponsor, setSponsor],
+                  ["Project name", projectName, setProjectName, "projectName", "e.g. Smart Grid Modernisation"],
+                  ["Programme", programme, setProgramme, "programme", "e.g. SCADA Migration"],
+                  ["Project manager", projectManager, setProjectManager, "projectManager", "e.g. Mohit M Makhija"],
+                  ["Sponsor", sponsor, setSponsor, "sponsor", "e.g. Siobhan Edgar"],
                 ] as const
-              ).map(([label, value, setter]) => (
+              ).map(([label, value, setter, key, placeholder]) => (
                 <div key={label}>
                   <label className="mb-1 block text-xs font-medium text-muted-foreground">
                     {label}
                   </label>
                   <input
                     value={value}
-                    onChange={(e) => setter(e.target.value)}
-                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground focus:ring-2 focus:ring-ring focus:outline-none"
+                    placeholder={placeholder}
+                    onChange={(e) => {
+                      setter(e.target.value);
+                      persist({ [key]: e.target.value });
+                    }}
+                    className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/60 focus:ring-2 focus:ring-ring focus:outline-none"
                   />
                 </div>
               ))}
@@ -300,13 +365,13 @@ function NewAssessmentWizard() {
                   Assessment reference
                 </label>
                 <input
-                  value={nextRef}
+                  value={draft.ref}
                   readOnly
                   aria-readonly
                   className="w-full cursor-not-allowed rounded-md border border-input bg-muted/50 px-3 py-2 font-mono text-sm text-muted-foreground"
                 />
                 <p className="mt-1 text-[11px] text-muted-foreground">
-                  Auto-generated when the assessment is created.
+                  Auto-generated when this draft was created.
                 </p>
               </div>
             </div>
@@ -335,7 +400,10 @@ function NewAssessmentWizard() {
                       type="radio"
                       name="framework"
                       checked={checked}
-                      onChange={() => setFrameworkId(f.id)}
+                      onChange={() => {
+                        setFrameworkId(f.id);
+                        persist({ frameworkId: f.id });
+                      }}
                       className="mt-1"
                     />
                     <span className="min-w-0">
@@ -351,6 +419,12 @@ function NewAssessmentWizard() {
                 );
               })}
             </div>
+
+            {!framework && (
+              <div className="rounded-lg border border-dashed border-border bg-muted/20 px-4 py-3 text-xs text-muted-foreground">
+                Select a framework above to see the policies it applies.
+              </div>
+            )}
 
             {framework && (
               <div className="rounded-lg border border-primary/20 bg-primary/5 p-4">
@@ -391,17 +465,9 @@ function NewAssessmentWizard() {
 
         {step === 2 && (
           <div className="space-y-4">
-            <div className="flex flex-wrap items-center justify-between gap-2">
-              <h2 className="text-sm font-semibold text-foreground">
-                Project artefacts ({files.length})
-              </h2>
-              <button
-                onClick={addDemoArtefacts}
-                className="inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted"
-              >
-                <Plus className="size-3.5" /> Add 5 demo artefacts (POC demo data)
-              </button>
-            </div>
+            <h2 className="text-sm font-semibold text-foreground">
+              Project artefacts ({files.length})
+            </h2>
 
             <div
               onDragOver={(e) => {
@@ -427,9 +493,9 @@ function NewAssessmentWizard() {
               <div className="mt-1 flex flex-wrap justify-center gap-2">
                 <button
                   onClick={() => fileInput.current?.click()}
-                  className="rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
+                  className="inline-flex items-center gap-1.5 rounded-md bg-primary px-3 py-1.5 text-xs font-medium text-primary-foreground hover:bg-primary/90"
                 >
-                  Browse files
+                  <UploadCloud className="size-3.5" /> Upload Artefacts
                 </button>
                 <button
                   onClick={addDemoReport}
@@ -494,9 +560,7 @@ function NewAssessmentWizard() {
                       <div className="text-[11px] text-muted-foreground">
                         {f.kind.toUpperCase()} · {f.sizeMb} MB ·{" "}
                         {f.source === "demo"
-                          ? f.name === sampleReport.fileName
-                            ? "POC demo report"
-                            : "POC demo data"
+                          ? "POC demo report"
                           : "Selected in this browser"}
                       </div>
                     </div>
@@ -511,7 +575,7 @@ function NewAssessmentWizard() {
                       </span>
                     )}
                     <button
-                      onClick={() => setFiles((s) => s.filter((x) => x.id !== f.id))}
+                      onClick={() => applyFiles(files.filter((x) => x.id !== f.id))}
                       className="rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground"
                       aria-label={`Remove ${f.name}`}
                     >
@@ -523,8 +587,8 @@ function NewAssessmentWizard() {
             )}
             {files.length === 0 && (
               <div className="rounded-lg border border-dashed border-border bg-muted/20 px-4 py-3 text-xs text-muted-foreground">
-                No artefacts yet — add at least one file (or use the demo SCADA
-                report) to run the assessment.
+                No artefacts uploaded yet — use Upload Artefacts or the demo SCADA
+                report to add at least one file before running the assessment.
               </div>
             )}
           </div>
@@ -539,32 +603,46 @@ function NewAssessmentWizard() {
                   <div>
                     <dt className="text-xs text-muted-foreground">Project</dt>
                     <dd className="font-medium text-foreground">
-                      {projectName} · {programme}
+                      {projectName.trim() || "—"} · {programme.trim() || "—"}
                     </dd>
                   </div>
                   <div>
                     <dt className="text-xs text-muted-foreground">Assessment reference</dt>
-                    <dd className="font-mono font-medium text-foreground">{nextRef}</dd>
+                    <dd className="font-mono font-medium text-foreground">{draft.ref}</dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-muted-foreground">Project manager</dt>
+                    <dd className="font-medium text-foreground">
+                      {projectManager.trim() || "—"}
+                    </dd>
+                  </div>
+                  <div>
+                    <dt className="text-xs text-muted-foreground">Sponsor</dt>
+                    <dd className="font-medium text-foreground">{sponsor.trim() || "—"}</dd>
                   </div>
                   <div>
                     <dt className="text-xs text-muted-foreground">Framework</dt>
                     <dd className="font-medium text-foreground">
-                      {framework?.name} ({framework?.policies.length} policies)
+                      {framework
+                        ? `${framework.name} (${framework.policies.length} policies)`
+                        : "Not selected"}
                     </dd>
                   </div>
                   <div>
                     <dt className="text-xs text-muted-foreground">Artefacts</dt>
                     <dd className="font-medium text-foreground">
-                      {files.length} file{files.length === 1 ? "" : "s"} ·{" "}
-                      {files.reduce((m, f) => m + f.sizeMb, 0).toFixed(1)} MB
+                      {files.length === 0
+                        ? "None uploaded"
+                        : `${files.length} file${files.length === 1 ? "" : "s"} · ${files
+                            .reduce((m, f) => m + f.sizeMb, 0)
+                            .toFixed(1)} MB`}
                     </dd>
                   </div>
                 </dl>
-                {files.length === 0 ? (
+                {missing.length > 0 ? (
                   <div className="rounded-lg border border-destructive/30 bg-destructive/5 px-4 py-3 text-sm text-destructive">
-                    No artefacts added — go back to the Artefacts step and add at
-                    least one file (or the demo SCADA report) before running the
-                    assessment.
+                    This assessment is not ready to run — go back and add{" "}
+                    {missing.join(", ")} before running the governance assessment.
                   </div>
                 ) : !allIndexed ? (
                   <div className="rounded-lg border border-warning/40 bg-warning/10 px-4 py-3 text-xs text-warning-foreground">
@@ -617,7 +695,7 @@ function NewAssessmentWizard() {
                     </li>
                   ))}
                 </ol>
-                {runDone && (
+                {runDone && runResult && (
                   <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg border border-success/30 bg-success/5 px-4 py-3">
                     <span className="text-sm font-semibold text-foreground">
                       Assessment complete
@@ -655,7 +733,7 @@ function NewAssessmentWizard() {
           ) : (
             <button
               onClick={runAssessment}
-              disabled={!allIndexed || running}
+              disabled={!canRun || running}
               className="inline-flex items-center gap-2 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90 disabled:opacity-40"
             >
               <Sparkles className="size-4" /> Run Governance Assessment
