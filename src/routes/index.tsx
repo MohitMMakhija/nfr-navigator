@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import {
   ArrowRight,
   BrainCircuit,
-  Library,
+  FileSearch,
   ListChecks,
   Plus,
   UploadCloud,
@@ -16,11 +16,11 @@ import { useDemo } from "@/lib/store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — NGET AI Governance Assurance POC" },
+      { title: "NGET AI Governance Assurance — Concept POC" },
       {
         name: "description",
         content:
-          "Concept demonstrator for AI-assisted governance assessment of project artefacts. Simulated AI, POC demo mode.",
+          "AI-assisted governance assessment for project artefacts. Upload artefacts, select a framework, and see simulated AI findings and recommendations. Concept POC.",
       },
       { property: "og:title", content: "NGET AI Governance Assurance — Concept POC" },
       {
@@ -37,24 +37,28 @@ export const Route = createFileRoute("/")({
 
 const STEPS = [
   {
-    icon: <UploadCloud className="size-5 text-primary" />,
-    title: "Upload project artefacts",
-    text: "Add the documents that describe your project — architecture reports, security assessments, NFR workbooks and plans.",
+    n: "01",
+    icon: <UploadCloud className="size-4 text-primary" />,
+    title: "Upload",
+    text: "Add the project artefacts — architecture reports, security assessments, NFR workbooks and plans. In this POC, files never leave your browser.",
   },
   {
-    icon: <Library className="size-5 text-primary" />,
-    title: "Select framework & policies",
-    text: "Choose the governance framework to assess against; the applicable policies are selected with it.",
+    n: "02",
+    icon: <BrainCircuit className="size-4 text-primary" />,
+    title: "Assess",
+    text: "Choose a governance framework; simulated AI assesses the artefacts against its applicable policies and requirements.",
   },
   {
-    icon: <BrainCircuit className="size-5 text-primary" />,
-    title: "Simulated AI assesses",
-    text: "The demonstrator simulates an AI review of your artefacts against the selected policies. No real AI runs in this POC.",
+    n: "03",
+    icon: <FileSearch className="size-4 text-primary" />,
+    title: "Review",
+    text: "Review a clear overall result with prioritised findings, each linked to the policy it relates to.",
   },
   {
-    icon: <ListChecks className="size-5 text-primary" />,
-    title: "Findings & recommendations",
-    text: "Review a concise compliance result with prioritised findings and a recommended action for each.",
+    n: "04",
+    icon: <ListChecks className="size-4 text-primary" />,
+    title: "Act",
+    text: "Follow the recommended action for each finding to strengthen governance before formal review.",
   },
 ];
 
@@ -65,8 +69,8 @@ function DashboardPage() {
   return (
     <div className="mx-auto max-w-[1100px]">
       <PageHeader
-        title="AI Governance Assurance"
-        subtitle="A concept demonstrator for AI-assisted project governance assessment: upload project artefacts, select a framework, and see simulated findings and recommendations."
+        title="NGET AI Governance Assurance"
+        subtitle="AI-assisted governance assessment for project artefacts"
         actions={
           <>
             <DemoBadge />
@@ -80,32 +84,55 @@ function DashboardPage() {
         }
       />
 
-      {/* Concept explainer */}
-      <div className="mb-8 rounded-xl border border-border bg-card p-6">
-        <h2 className="text-sm font-semibold text-foreground">How it works</h2>
-        <p className="mt-1 text-xs text-muted-foreground">
-          A lightweight flow from project documents to governance insight. All AI
-          behaviour in this POC is simulated and clearly labelled.
+      {/* Concept description */}
+      <div className="mb-10 max-w-3xl">
+        <p className="text-sm leading-relaxed text-muted-foreground">
+          A concept demonstrator for AI-assisted project governance assessment:
+          upload project artefacts, select a framework, and see simulated AI
+          findings and recommendations. All AI behaviour in this POC is simulated
+          and clearly labelled — no real AI, backend, or document processing
+          takes place.
         </p>
-        <ol className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map((s, i) => (
-            <li key={s.title} className="rounded-lg border border-border bg-background p-4">
-              <div className="flex items-center gap-2">
-                <span className="flex size-8 items-center justify-center rounded-md bg-primary/10">
+      </div>
+
+      {/* How it works */}
+      <section className="mb-10">
+        <h2 className="text-sm font-semibold text-foreground">How it works</h2>
+        <ol className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          {STEPS.map((s) => (
+            <li key={s.n}>
+              <div className="flex items-center gap-2.5">
+                <span className="font-mono text-xs font-semibold text-brand-mid">
+                  {s.n}
+                </span>
+                <span className="flex size-7 items-center justify-center rounded-md bg-primary/5">
                   {s.icon}
                 </span>
-                <span className="font-mono text-xs text-muted-foreground">Step {i + 1}</span>
+                <h3 className="text-sm font-semibold text-foreground">{s.title}</h3>
               </div>
-              <h3 className="mt-3 text-sm font-semibold text-foreground">{s.title}</h3>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{s.text}</p>
+              <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
+                {s.text}
+              </p>
             </li>
           ))}
         </ol>
-      </div>
+      </section>
+
+      {/* Why this matters */}
+      <section className="mb-10 rounded-xl bg-accent/60 px-6 py-5">
+        <h2 className="text-sm font-semibold text-foreground">Why this matters</h2>
+        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+          Manual governance reviews of project artefacts are time-consuming,
+          inconsistent, and often happen too late to influence delivery.
+          AI-assisted assessment gives project teams an early, consistent read of
+          their governance posture — surfacing gaps and recommended actions while
+          there is still time to act.
+        </p>
+      </section>
 
       {/* Recent assessments */}
-      <div className="rounded-xl border border-border bg-card">
-        <div className="flex items-center justify-between border-b border-border px-5 py-3">
+      <section className="rounded-xl border border-border bg-card">
+        <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
           <h2 className="text-sm font-semibold text-foreground">Recent assessments</h2>
           <Link
             to="/assessments"
@@ -116,6 +143,13 @@ function DashboardPage() {
         </div>
         {!hydrated ? (
           <p className="px-5 py-6 text-sm text-muted-foreground">Loading…</p>
+        ) : recent.length === 0 ? (
+          <div className="px-5 py-10 text-center">
+            <p className="text-sm font-medium text-foreground">No assessments yet</p>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Run your first simulated governance assessment to see it here.
+            </p>
+          </div>
         ) : (
           <ul className="divide-y divide-border">
             {recent.map((a) => (
@@ -123,7 +157,7 @@ function DashboardPage() {
                 <Link
                   to="/assessments/$assessmentId"
                   params={{ assessmentId: a.ref }}
-                  className="flex items-center gap-4 px-5 py-3.5 transition-colors hover:bg-muted/40"
+                  className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/40"
                 >
                   <span className="font-mono text-xs font-semibold text-foreground">
                     {a.ref}
@@ -132,7 +166,7 @@ function DashboardPage() {
                     <span className="block truncate text-sm font-medium text-foreground">
                       {a.projectName}
                       {a.isPocDemo && (
-                        <span className="ml-2 rounded-full border border-warning/40 bg-warning/15 px-2 py-0.5 text-[10px] font-semibold text-warning-foreground uppercase">
+                        <span className="ml-2 rounded-full border border-primary/20 bg-primary/5 px-2 py-0.5 text-[10px] font-semibold text-primary uppercase">
                           POC Demo Assessment
                         </span>
                       )}
@@ -153,7 +187,7 @@ function DashboardPage() {
             ))}
           </ul>
         )}
-      </div>
+      </section>
     </div>
   );
 }
