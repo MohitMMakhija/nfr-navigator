@@ -1,32 +1,25 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import {
-  ArrowRight,
-  BrainCircuit,
-  FileSearch,
-  ListChecks,
-  Plus,
-  UploadCloud,
-} from "lucide-react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { AlertTriangle, ArrowRight, Plus } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
-import { DemoBadge, VerdictBadge } from "@/components/status";
+import { DemoBadge, StatusBadge, VerdictBadge } from "@/components/status";
 import { getFramework } from "@/lib/mock/frameworks";
-import { mockResult } from "@/lib/mock/findings";
+import { resultForAssessment } from "@/lib/mock/profiles";
 import { useDemo } from "@/lib/store";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "NGET AI Governance Assurance — Concept POC" },
+      { title: "Assessment Overview — NGET AI Governance Assurance POC" },
       {
         name: "description",
         content:
-          "AI-assisted governance assessment for project artefacts. Upload artefacts, select a framework, and see simulated AI findings and recommendations. Concept POC.",
+          "Assessment overview for the NGET AI Governance Assurance concept POC: portfolio metrics, outcomes and recent simulated assessments.",
       },
-      { property: "og:title", content: "NGET AI Governance Assurance — Concept POC" },
+      { property: "og:title", content: "Assessment Overview — NGET AI Governance Assurance POC" },
       {
         property: "og:description",
         content:
-          "Upload project artefacts, select a framework, and get simulated AI governance findings and recommendations.",
+          "High-level overview of simulated governance assessments in this POC demo workspace.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -35,42 +28,31 @@ export const Route = createFileRoute("/")({
   component: DashboardPage,
 });
 
-const STEPS = [
-  {
-    n: "01",
-    icon: <UploadCloud className="size-4 text-primary" />,
-    title: "Upload",
-    text: "Add the project artefacts — architecture reports, security assessments, NFR workbooks and plans. In this POC, files never leave your browser.",
-  },
-  {
-    n: "02",
-    icon: <BrainCircuit className="size-4 text-primary" />,
-    title: "Assess",
-    text: "Choose a governance framework; simulated AI assesses the artefacts against its applicable policies and requirements.",
-  },
-  {
-    n: "03",
-    icon: <FileSearch className="size-4 text-primary" />,
-    title: "Review",
-    text: "Review a clear overall result with prioritised findings, each linked to the policy it relates to.",
-  },
-  {
-    n: "04",
-    icon: <ListChecks className="size-4 text-primary" />,
-    title: "Act",
-    text: "Follow the recommended action for each finding to strengthen governance before formal review.",
-  },
-];
-
 function DashboardPage() {
   const { assessments, hydrated } = useDemo();
-  const recent = [...assessments].slice(-3).reverse();
+  const navigate = useNavigate();
+
+  const total = assessments.length;
+  const inReview = assessments.filter((a) => a.status === "in-review").length;
+  const completed = assessments.filter((a) => a.status === "completed").length;
+  const attention = assessments.filter(
+    (a) => resultForAssessment(a).category !== "aligned",
+  );
+
+  const outcomeCounts = {
+    aligned: assessments.filter((a) => resultForAssessment(a).category === "aligned")
+      .length,
+    conditional: assessments.filter(
+      (a) => resultForAssessment(a).category === "conditional",
+    ).length,
+    gaps: assessments.filter((a) => resultForAssessment(a).category === "gaps").length,
+  };
 
   return (
     <div className="mx-auto max-w-[1100px]">
       <PageHeader
-        title="NGET AI Governance Assurance"
-        subtitle="AI-assisted governance assessment for project artefacts"
+        title="Assessment Overview"
+        subtitle="High-level view of the governance assessments in this POC demo workspace. All results are simulated."
         actions={
           <>
             <DemoBadge />
@@ -84,56 +66,92 @@ function DashboardPage() {
         }
       />
 
-      {/* Concept description */}
-      <div className="mb-10 max-w-3xl">
-        <p className="text-sm leading-relaxed text-muted-foreground">
-          A concept demonstrator for AI-assisted project governance assessment:
-          upload project artefacts, select a framework, and see simulated AI
-          findings and recommendations. All AI behaviour in this POC is simulated
-          and clearly labelled — no real AI, backend, or document processing
-          takes place.
-        </p>
-      </div>
-
-      {/* How it works */}
-      <section className="mb-10">
-        <h2 className="text-sm font-semibold text-foreground">How it works</h2>
-        <ol className="mt-4 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-          {STEPS.map((s) => (
-            <li key={s.n}>
-              <div className="flex items-center gap-2.5">
-                <span className="font-mono text-xs font-semibold text-brand-mid">
-                  {s.n}
-                </span>
-                <span className="flex size-7 items-center justify-center rounded-md bg-primary/5">
-                  {s.icon}
-                </span>
-                <h3 className="text-sm font-semibold text-foreground">{s.title}</h3>
-              </div>
-              <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground">
-                {s.text}
-              </p>
-            </li>
-          ))}
-        </ol>
+      {/* Portfolio metrics */}
+      <section className="mb-6 grid grid-cols-2 gap-3 lg:grid-cols-4">
+        {(
+          [
+            ["Total assessments", total, "text-foreground"],
+            ["In Review", inReview, "text-info"],
+            ["Completed", completed, "text-success"],
+            ["Needs Attention", attention.length, "text-warning-foreground"],
+          ] as const
+        ).map(([label, value, text]) => (
+          <div key={label} className="rounded-xl border border-border bg-card p-4">
+            <div className={`text-2xl font-bold ${text}`}>{hydrated ? value : "–"}</div>
+            <div className="mt-0.5 text-xs font-medium text-muted-foreground">{label}</div>
+          </div>
+        ))}
       </section>
 
-      {/* Why this matters */}
-      <section className="mb-10 rounded-xl bg-accent/60 px-6 py-5">
-        <h2 className="text-sm font-semibold text-foreground">Why this matters</h2>
-        <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          Manual governance reviews of project artefacts are time-consuming,
-          inconsistent, and often happen too late to influence delivery.
-          AI-assisted assessment gives project teams an early, consistent read of
-          their governance posture — surfacing gaps and recommended actions while
-          there is still time to act.
-        </p>
+      {/* Outcome mix */}
+      <section className="mb-8 rounded-xl border border-border bg-card p-5">
+        <h2 className="text-sm font-semibold text-foreground">Assessment outcomes</h2>
+        <div className="mt-3 grid grid-cols-3 gap-3">
+          <div className="rounded-lg border border-success/30 bg-success/10 p-4 text-center">
+            <div className="text-2xl font-bold text-success">{outcomeCounts.aligned}</div>
+            <div className="mt-0.5 text-xs text-muted-foreground">Aligned</div>
+          </div>
+          <div className="rounded-lg border border-warning/40 bg-warning/15 p-4 text-center">
+            <div className="text-2xl font-bold text-warning-foreground">
+              {outcomeCounts.conditional}
+            </div>
+            <div className="mt-0.5 text-xs text-muted-foreground">Conditional</div>
+          </div>
+          <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4 text-center">
+            <div className="text-2xl font-bold text-destructive">{outcomeCounts.gaps}</div>
+            <div className="mt-0.5 text-xs text-muted-foreground">Significant Gaps</div>
+          </div>
+        </div>
       </section>
 
-      {/* Recent assessments */}
-      <section className="rounded-xl border border-border bg-card">
+      {/* Needs attention */}
+      {hydrated && attention.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-sm font-semibold text-foreground">Needs attention</h2>
+          <div className="mt-3 grid gap-3 md:grid-cols-2">
+            {attention.map((a) => {
+              const result = resultForAssessment(a);
+              const highCount = result.findings.filter(
+                (f) => f.severity === "high",
+              ).length;
+              return (
+                <Link
+                  key={a.ref}
+                  to="/assessments/$assessmentId"
+                  params={{ assessmentId: a.ref }}
+                  className="group rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40"
+                >
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="font-mono text-xs font-semibold text-foreground">
+                      {a.ref}
+                    </span>
+                    <VerdictBadge verdict={result.verdict} category={result.category} />
+                  </div>
+                  <div className="mt-2 text-sm font-medium text-foreground">
+                    {a.projectName}
+                  </div>
+                  <div className="text-xs text-muted-foreground">{a.programme}</div>
+                  <div className="mt-3 flex items-center gap-3 text-xs text-muted-foreground">
+                    <span className="font-mono font-semibold text-foreground">
+                      {result.overall}%
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <AlertTriangle className="size-3.5 text-destructive" />
+                      {highCount} high-severity finding{highCount === 1 ? "" : "s"}
+                    </span>
+                    <ArrowRight className="ml-auto size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+      )}
+
+      {/* Assessment table */}
+      <section className="overflow-hidden rounded-xl border border-border bg-card">
         <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
-          <h2 className="text-sm font-semibold text-foreground">Recent assessments</h2>
+          <h2 className="text-sm font-semibold text-foreground">Assessments</h2>
           <Link
             to="/assessments"
             className="inline-flex items-center gap-1 text-xs font-medium text-primary hover:underline"
@@ -141,51 +159,61 @@ function DashboardPage() {
             View all <ArrowRight className="size-3" />
           </Link>
         </div>
-        {!hydrated ? (
-          <p className="px-5 py-6 text-sm text-muted-foreground">Loading…</p>
-        ) : recent.length === 0 ? (
-          <div className="px-5 py-10 text-center">
-            <p className="text-sm font-medium text-foreground">No assessments yet</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Run your first simulated governance assessment to see it here.
-            </p>
-          </div>
-        ) : (
-          <ul className="divide-y divide-border">
-            {recent.map((a) => (
-              <li key={a.ref}>
-                <Link
-                  to="/assessments/$assessmentId"
-                  params={{ assessmentId: a.ref }}
-                  className="flex items-center gap-4 px-5 py-4 transition-colors hover:bg-muted/40"
-                >
-                  <span className="font-mono text-xs font-semibold text-foreground">
-                    {a.ref}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-medium text-foreground">
+        <table className="w-full text-sm">
+          <thead>
+            <tr className="border-b border-border bg-muted/40 text-left text-xs text-muted-foreground">
+              <th className="px-5 py-3 font-medium">Reference</th>
+              <th className="px-5 py-3 font-medium">Project</th>
+              <th className="hidden px-5 py-3 font-medium md:table-cell">Programme</th>
+              <th className="hidden px-5 py-3 font-medium lg:table-cell">Framework</th>
+              <th className="px-5 py-3 font-medium">Status</th>
+              <th className="px-5 py-3 font-medium">Score</th>
+              <th className="px-5 py-3 font-medium">Outcome</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-border">
+            {hydrated &&
+              assessments.map((a) => {
+                const result = resultForAssessment(a);
+                return (
+                  <tr
+                    key={a.ref}
+                    onClick={() =>
+                      navigate({
+                        to: "/assessments/$assessmentId",
+                        params: { assessmentId: a.ref },
+                      })
+                    }
+                    className="cursor-pointer transition-colors hover:bg-muted/40"
+                  >
+                    <td className="px-5 py-3.5 font-mono text-xs font-semibold text-foreground">
+                      {a.ref}
+                    </td>
+                    <td className="px-5 py-3.5 font-medium text-foreground">
                       {a.projectName}
-                      {a.isPocDemo && (
-                        <span className="ml-2 rounded-full border border-primary/20 bg-primary/5 px-2 py-0.5 text-[10px] font-semibold text-primary uppercase">
-                          POC Demo Assessment
-                        </span>
-                      )}
-                    </span>
-                    <span className="block text-xs text-muted-foreground">
-                      {a.programme} · {getFramework(a.frameworkId)?.name ?? a.frameworkId}
-                    </span>
-                  </span>
-                  <span className="hidden items-center gap-2 sm:flex">
-                    <span className="font-mono text-xs text-muted-foreground">
-                      {mockResult.overall}%
-                    </span>
-                    <VerdictBadge verdict={mockResult.verdict} />
-                  </span>
-                  <ArrowRight className="size-4 text-muted-foreground" />
-                </Link>
-              </li>
-            ))}
-          </ul>
+                    </td>
+                    <td className="hidden px-5 py-3.5 text-xs text-muted-foreground md:table-cell">
+                      {a.programme}
+                    </td>
+                    <td className="hidden px-5 py-3.5 text-xs text-muted-foreground lg:table-cell">
+                      {getFramework(a.frameworkId)?.name ?? a.frameworkId}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <StatusBadge status={a.status} />
+                    </td>
+                    <td className="px-5 py-3.5 font-mono text-xs text-foreground">
+                      {result.overall}%
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <VerdictBadge verdict={result.verdict} category={result.category} />
+                    </td>
+                  </tr>
+                );
+              })}
+          </tbody>
+        </table>
+        {!hydrated && (
+          <p className="px-5 py-6 text-sm text-muted-foreground">Loading…</p>
         )}
       </section>
     </div>

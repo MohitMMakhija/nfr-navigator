@@ -1,5 +1,7 @@
 export type Severity = "high" | "medium" | "low";
 export type ArtefactKind = "pdf" | "docx" | "xlsx" | "zip";
+export type AssessmentStatus = "in-review" | "completed";
+export type OutcomeCategory = "aligned" | "conditional" | "gaps";
 
 export interface ArtefactMeta {
   id: string;
@@ -42,10 +44,28 @@ export interface Finding {
 export interface AssessmentResult {
   overall: number;
   verdict: string;
+  category: OutcomeCategory;
   compliant: number;
   partial: number;
   gaps: number;
+  narrative: string;
   findings: Finding[];
+}
+
+// A fixed, deterministic demo result profile. Every assessment points at one
+// of these, so scores, outcomes and findings never change between refreshes.
+export interface AssessmentProfile {
+  id: string;
+  ref: string;
+  projectName: string;
+  programme: string;
+  projectManager: string;
+  sponsor: string;
+  frameworkId: string;
+  status: AssessmentStatus;
+  createdAt: string;
+  artefacts: ArtefactMeta[];
+  result: AssessmentResult;
 }
 
 export interface AssessmentRecord {
@@ -55,6 +75,8 @@ export interface AssessmentRecord {
   projectManager: string;
   sponsor: string;
   frameworkId: string;
+  profileId: string;
+  status: AssessmentStatus;
   createdAt: string;
   artefacts: ArtefactMeta[];
   isPocDemo?: boolean;

@@ -1,18 +1,21 @@
 import type { AssessmentRecord } from "./types";
-import { demoArtefacts } from "./artefacts";
+import { profiles } from "./profiles";
 
-// The seeded POC demo assessment, always present after a reset.
-export const seedAssessment: AssessmentRecord = {
-  ref: "AGR-2026-001",
-  projectName: "Smart Grid Modernisation",
-  programme: "SCADA Migration",
-  projectManager: "Mohit M Makhija",
-  sponsor: "Siobhan Edgar",
-  frameworkId: "arch-gov",
-  createdAt: "2026-08-21T09:30:00.000Z",
-  artefacts: demoArtefacts,
+// The seeded POC demo assessments, always present after a reset. Each record
+// points at a fixed deterministic profile, so results never change.
+export const seedAssessments: AssessmentRecord[] = profiles.map((p) => ({
+  ref: p.ref,
+  projectName: p.projectName,
+  programme: p.programme,
+  projectManager: p.projectManager,
+  sponsor: p.sponsor,
+  frameworkId: p.frameworkId,
+  profileId: p.id,
+  status: p.status,
+  createdAt: p.createdAt,
+  artefacts: p.artefacts,
   isPocDemo: true,
-};
+}));
 
 const REF_PREFIX = "AGR-2026-";
 

@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import {
   ClipboardCheck,
+  Info,
   LayoutDashboard,
   Library,
   ListChecks,
@@ -24,6 +25,7 @@ const NAV: NavItem[] = [
   { to: "/frameworks", label: "Framework & Policy Library", icon: <Library className="size-4" /> },
   { to: "/findings", label: "Findings & Recommendations", icon: <ListChecks className="size-4" /> },
   { to: "/future", label: "Future Enhancements", icon: <Rocket className="size-4" /> },
+  { to: "/about", label: "About the POC", icon: <Info className="size-4" /> },
   { to: "/settings", label: "Settings", icon: <Settings className="size-4" /> },
 ];
 
