@@ -437,13 +437,14 @@ export function profileForFramework(frameworkId: string): AssessmentProfile {
   return profiles.find((p) => p.id === profileId) ?? profiles[0]!;
 }
 
-// Resolve the deterministic result for any assessment record, with a safe
-// fallback derived from its framework for legacy demo records.
+// Resolve the deterministic result for an assessment record. Drafts have no
+// profile yet, so they return null — a draft is "Not Assessed" everywhere.
 export function resultForAssessment(
   assessment: Pick<AssessmentRecord, "profileId" | "frameworkId">,
-): AssessmentResult {
+): AssessmentResult | null {
+  if (!assessment.profileId) return null;
   return (
     getProfile(assessment.profileId)?.result ??
-    profileForFramework(assessment.frameworkId).result
+    (assessment.frameworkId ? profileForFramework(assessment.frameworkId).result : null)
   );
 }

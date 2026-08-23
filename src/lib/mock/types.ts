@@ -1,6 +1,6 @@
 export type Severity = "high" | "medium" | "low";
 export type ArtefactKind = "pdf" | "docx" | "xlsx" | "zip";
-export type AssessmentStatus = "in-review" | "completed";
+export type AssessmentStatus = "draft" | "in-review" | "completed";
 export type OutcomeCategory = "aligned" | "conditional" | "gaps";
 
 export interface ArtefactMeta {
@@ -74,8 +74,11 @@ export interface AssessmentRecord {
   programme: string;
   projectManager: string;
   sponsor: string;
+  // "" while a draft has not selected a framework yet.
   frameworkId: string;
-  profileId: string;
+  // null while the record is a draft — no result exists until the
+  // simulated assessment has been run.
+  profileId: string | null;
   status: AssessmentStatus;
   createdAt: string;
   artefacts: ArtefactMeta[];
