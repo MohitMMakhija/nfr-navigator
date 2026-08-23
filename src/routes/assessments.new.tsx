@@ -24,9 +24,10 @@ import { useDemo } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/assessments/new")({
-  validateSearch: (search: Record<string, unknown>): { ref?: string } => ({
-    ref: typeof search.ref === "string" ? search.ref : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { ref?: string } => {
+    const ref = search["ref"];
+    return typeof ref === "string" ? { ref } : {};
+  },
   head: () => ({
     meta: [
       { title: "New Governance Assessment — Automated Governance Artifacts Review System POC" },
