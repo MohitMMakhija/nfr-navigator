@@ -34,7 +34,7 @@ export const Route = createFileRoute("/future")({
 });
 
 interface FutureCard {
-  icon: React.ReactNode;
+  icon: ReactNode;
   title: string;
   text: string;
   featured?: boolean;
