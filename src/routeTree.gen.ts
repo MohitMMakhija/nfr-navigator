@@ -10,53 +10,30 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApprovalsRouteImport } from './routes/approvals'
-import { Route as EvidenceRouteImport } from './routes/evidence'
-import { Route as ExecutiveSummaryRouteImport } from './routes/executive-summary'
-import { Route as ExplainabilityRouteImport } from './routes/explainability'
+import { Route as SplatRouteImport } from './routes/$'
+import { Route as FindingsRouteImport } from './routes/findings'
 import { Route as FrameworksRouteImport } from './routes/frameworks'
-import { Route as HeatmapRouteImport } from './routes/heatmap'
-import { Route as MitigationsRouteImport } from './routes/mitigations'
-import { Route as PocMetricsRouteImport } from './routes/poc-metrics'
-import { Route as PoliciesRouteImport } from './routes/policies'
-import { Route as RisksRouteImport } from './routes/risks'
-import { Route as StageGateRouteImport } from './routes/stage-gate'
-import { Route as TraceRouteImport } from './routes/trace'
+import { Route as FutureRouteImport } from './routes/future'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as AssessmentsIndexRouteImport } from './routes/assessments.index'
 import { Route as AssessmentsAssessmentIdRouteImport } from './routes/assessments.$assessmentId'
 import { Route as AssessmentsNewRouteImport } from './routes/assessments.new'
 import { Route as FrameworksIndexRouteImport } from './routes/frameworks.index'
 import { Route as FrameworksFrameworkIdRouteImport } from './routes/frameworks.$frameworkId'
-import { Route as PoliciesIndexRouteImport } from './routes/policies.index'
-import { Route as PoliciesPolicyIdRouteImport } from './routes/policies.$policyId'
-import { Route as RequirementsRequirementIdRouteImport } from './routes/requirements.$requirementId'
-import { Route as RisksIndexRouteImport } from './routes/risks.index'
-import { Route as RisksRiskIdRouteImport } from './routes/risks.$riskId'
-import { Route as AssessmentsAssessmentIdIndexRouteImport } from './routes/assessments.$assessmentId.index'
-import { Route as AssessmentsAssessmentIdRunRouteImport } from './routes/assessments.$assessmentId.run'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApprovalsRoute = ApprovalsRouteImport.update({
-  id: '/approvals',
-  path: '/approvals',
+const SplatRoute = SplatRouteImport.update({
+  id: '/$',
+  path: '/$',
   getParentRoute: () => rootRouteImport,
 } as any)
-const EvidenceRoute = EvidenceRouteImport.update({
-  id: '/evidence',
-  path: '/evidence',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExecutiveSummaryRoute = ExecutiveSummaryRouteImport.update({
-  id: '/executive-summary',
-  path: '/executive-summary',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ExplainabilityRoute = ExplainabilityRouteImport.update({
-  id: '/explainability',
-  path: '/explainability',
+const FindingsRoute = FindingsRouteImport.update({
+  id: '/findings',
+  path: '/findings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FrameworksRoute = FrameworksRouteImport.update({
@@ -64,39 +41,19 @@ const FrameworksRoute = FrameworksRouteImport.update({
   path: '/frameworks',
   getParentRoute: () => rootRouteImport,
 } as any)
-const HeatmapRoute = HeatmapRouteImport.update({
-  id: '/heatmap',
-  path: '/heatmap',
+const FutureRoute = FutureRouteImport.update({
+  id: '/future',
+  path: '/future',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MitigationsRoute = MitigationsRouteImport.update({
-  id: '/mitigations',
-  path: '/mitigations',
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PocMetricsRoute = PocMetricsRouteImport.update({
-  id: '/poc-metrics',
-  path: '/poc-metrics',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PoliciesRoute = PoliciesRouteImport.update({
-  id: '/policies',
-  path: '/policies',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const RisksRoute = RisksRouteImport.update({
-  id: '/risks',
-  path: '/risks',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const StageGateRoute = StageGateRouteImport.update({
-  id: '/stage-gate',
-  path: '/stage-gate',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const TraceRoute = TraceRouteImport.update({
-  id: '/trace',
-  path: '/trace',
+const AssessmentsIndexRoute = AssessmentsIndexRouteImport.update({
+  id: '/assessments/',
+  path: '/assessments/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AssessmentsAssessmentIdRoute = AssessmentsAssessmentIdRouteImport.update({
@@ -119,214 +76,97 @@ const FrameworksFrameworkIdRoute = FrameworksFrameworkIdRouteImport.update({
   path: '/$frameworkId',
   getParentRoute: () => FrameworksRoute,
 } as any)
-const PoliciesIndexRoute = PoliciesIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PoliciesRoute,
-} as any)
-const PoliciesPolicyIdRoute = PoliciesPolicyIdRouteImport.update({
-  id: '/$policyId',
-  path: '/$policyId',
-  getParentRoute: () => PoliciesRoute,
-} as any)
-const RequirementsRequirementIdRoute =
-  RequirementsRequirementIdRouteImport.update({
-    id: '/requirements/$requirementId',
-    path: '/requirements/$requirementId',
-    getParentRoute: () => rootRouteImport,
-  } as any)
-const RisksIndexRoute = RisksIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => RisksRoute,
-} as any)
-const RisksRiskIdRoute = RisksRiskIdRouteImport.update({
-  id: '/$riskId',
-  path: '/$riskId',
-  getParentRoute: () => RisksRoute,
-} as any)
-const AssessmentsAssessmentIdIndexRoute =
-  AssessmentsAssessmentIdIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => AssessmentsAssessmentIdRoute,
-  } as any)
-const AssessmentsAssessmentIdRunRoute =
-  AssessmentsAssessmentIdRunRouteImport.update({
-    id: '/run',
-    path: '/run',
-    getParentRoute: () => AssessmentsAssessmentIdRoute,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/approvals': typeof ApprovalsRoute
-  '/evidence': typeof EvidenceRoute
-  '/executive-summary': typeof ExecutiveSummaryRoute
-  '/explainability': typeof ExplainabilityRoute
+  '/$': typeof SplatRoute
+  '/findings': typeof FindingsRoute
   '/frameworks': typeof FrameworksRouteWithChildren
-  '/heatmap': typeof HeatmapRoute
-  '/mitigations': typeof MitigationsRoute
-  '/poc-metrics': typeof PocMetricsRoute
-  '/policies': typeof PoliciesRouteWithChildren
-  '/risks': typeof RisksRouteWithChildren
-  '/stage-gate': typeof StageGateRoute
-  '/trace': typeof TraceRoute
-  '/assessments/$assessmentId': typeof AssessmentsAssessmentIdRouteWithChildren
+  '/future': typeof FutureRoute
+  '/settings': typeof SettingsRoute
+  '/assessments/$assessmentId': typeof AssessmentsAssessmentIdRoute
   '/assessments/new': typeof AssessmentsNewRoute
   '/frameworks/$frameworkId': typeof FrameworksFrameworkIdRoute
-  '/policies/$policyId': typeof PoliciesPolicyIdRoute
-  '/requirements/$requirementId': typeof RequirementsRequirementIdRoute
-  '/risks/$riskId': typeof RisksRiskIdRoute
+  '/assessments/': typeof AssessmentsIndexRoute
   '/frameworks/': typeof FrameworksIndexRoute
-  '/policies/': typeof PoliciesIndexRoute
-  '/risks/': typeof RisksIndexRoute
-  '/assessments/$assessmentId/run': typeof AssessmentsAssessmentIdRunRoute
-  '/assessments/$assessmentId/': typeof AssessmentsAssessmentIdIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/approvals': typeof ApprovalsRoute
-  '/evidence': typeof EvidenceRoute
-  '/executive-summary': typeof ExecutiveSummaryRoute
-  '/explainability': typeof ExplainabilityRoute
-  '/heatmap': typeof HeatmapRoute
-  '/mitigations': typeof MitigationsRoute
-  '/poc-metrics': typeof PocMetricsRoute
-  '/stage-gate': typeof StageGateRoute
-  '/trace': typeof TraceRoute
+  '/$': typeof SplatRoute
+  '/findings': typeof FindingsRoute
+  '/future': typeof FutureRoute
+  '/settings': typeof SettingsRoute
+  '/assessments/$assessmentId': typeof AssessmentsAssessmentIdRoute
   '/assessments/new': typeof AssessmentsNewRoute
   '/frameworks/$frameworkId': typeof FrameworksFrameworkIdRoute
-  '/policies/$policyId': typeof PoliciesPolicyIdRoute
-  '/requirements/$requirementId': typeof RequirementsRequirementIdRoute
-  '/risks/$riskId': typeof RisksRiskIdRoute
+  '/assessments': typeof AssessmentsIndexRoute
   '/frameworks': typeof FrameworksIndexRoute
-  '/policies': typeof PoliciesIndexRoute
-  '/risks': typeof RisksIndexRoute
-  '/assessments/$assessmentId/run': typeof AssessmentsAssessmentIdRunRoute
-  '/assessments/$assessmentId': typeof AssessmentsAssessmentIdIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/approvals': typeof ApprovalsRoute
-  '/evidence': typeof EvidenceRoute
-  '/executive-summary': typeof ExecutiveSummaryRoute
-  '/explainability': typeof ExplainabilityRoute
+  '/$': typeof SplatRoute
+  '/findings': typeof FindingsRoute
   '/frameworks': typeof FrameworksRouteWithChildren
-  '/heatmap': typeof HeatmapRoute
-  '/mitigations': typeof MitigationsRoute
-  '/poc-metrics': typeof PocMetricsRoute
-  '/policies': typeof PoliciesRouteWithChildren
-  '/risks': typeof RisksRouteWithChildren
-  '/stage-gate': typeof StageGateRoute
-  '/trace': typeof TraceRoute
-  '/assessments/$assessmentId': typeof AssessmentsAssessmentIdRouteWithChildren
+  '/future': typeof FutureRoute
+  '/settings': typeof SettingsRoute
+  '/assessments/$assessmentId': typeof AssessmentsAssessmentIdRoute
   '/assessments/new': typeof AssessmentsNewRoute
   '/frameworks/$frameworkId': typeof FrameworksFrameworkIdRoute
-  '/policies/$policyId': typeof PoliciesPolicyIdRoute
-  '/requirements/$requirementId': typeof RequirementsRequirementIdRoute
-  '/risks/$riskId': typeof RisksRiskIdRoute
+  '/assessments/': typeof AssessmentsIndexRoute
   '/frameworks/': typeof FrameworksIndexRoute
-  '/policies/': typeof PoliciesIndexRoute
-  '/risks/': typeof RisksIndexRoute
-  '/assessments/$assessmentId/run': typeof AssessmentsAssessmentIdRunRoute
-  '/assessments/$assessmentId/': typeof AssessmentsAssessmentIdIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/approvals'
-    | '/evidence'
-    | '/executive-summary'
-    | '/explainability'
+    | '/$'
+    | '/findings'
     | '/frameworks'
-    | '/heatmap'
-    | '/mitigations'
-    | '/poc-metrics'
-    | '/policies'
-    | '/risks'
-    | '/stage-gate'
-    | '/trace'
+    | '/future'
+    | '/settings'
     | '/assessments/$assessmentId'
     | '/assessments/new'
     | '/frameworks/$frameworkId'
-    | '/policies/$policyId'
-    | '/requirements/$requirementId'
-    | '/risks/$riskId'
+    | '/assessments/'
     | '/frameworks/'
-    | '/policies/'
-    | '/risks/'
-    | '/assessments/$assessmentId/run'
-    | '/assessments/$assessmentId/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/approvals'
-    | '/evidence'
-    | '/executive-summary'
-    | '/explainability'
-    | '/heatmap'
-    | '/mitigations'
-    | '/poc-metrics'
-    | '/stage-gate'
-    | '/trace'
+    | '/$'
+    | '/findings'
+    | '/future'
+    | '/settings'
+    | '/assessments/$assessmentId'
     | '/assessments/new'
     | '/frameworks/$frameworkId'
-    | '/policies/$policyId'
-    | '/requirements/$requirementId'
-    | '/risks/$riskId'
+    | '/assessments'
     | '/frameworks'
-    | '/policies'
-    | '/risks'
-    | '/assessments/$assessmentId/run'
-    | '/assessments/$assessmentId'
   id:
     | '__root__'
     | '/'
-    | '/approvals'
-    | '/evidence'
-    | '/executive-summary'
-    | '/explainability'
+    | '/$'
+    | '/findings'
     | '/frameworks'
-    | '/heatmap'
-    | '/mitigations'
-    | '/poc-metrics'
-    | '/policies'
-    | '/risks'
-    | '/stage-gate'
-    | '/trace'
+    | '/future'
+    | '/settings'
     | '/assessments/$assessmentId'
     | '/assessments/new'
     | '/frameworks/$frameworkId'
-    | '/policies/$policyId'
-    | '/requirements/$requirementId'
-    | '/risks/$riskId'
+    | '/assessments/'
     | '/frameworks/'
-    | '/policies/'
-    | '/risks/'
-    | '/assessments/$assessmentId/run'
-    | '/assessments/$assessmentId/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  ApprovalsRoute: typeof ApprovalsRoute
-  EvidenceRoute: typeof EvidenceRoute
-  ExecutiveSummaryRoute: typeof ExecutiveSummaryRoute
-  ExplainabilityRoute: typeof ExplainabilityRoute
+  SplatRoute: typeof SplatRoute
+  FindingsRoute: typeof FindingsRoute
   FrameworksRoute: typeof FrameworksRouteWithChildren
-  HeatmapRoute: typeof HeatmapRoute
-  MitigationsRoute: typeof MitigationsRoute
-  PocMetricsRoute: typeof PocMetricsRoute
-  PoliciesRoute: typeof PoliciesRouteWithChildren
-  RisksRoute: typeof RisksRouteWithChildren
-  StageGateRoute: typeof StageGateRoute
-  TraceRoute: typeof TraceRoute
-  AssessmentsAssessmentIdRoute: typeof AssessmentsAssessmentIdRouteWithChildren
+  FutureRoute: typeof FutureRoute
+  SettingsRoute: typeof SettingsRoute
+  AssessmentsAssessmentIdRoute: typeof AssessmentsAssessmentIdRoute
   AssessmentsNewRoute: typeof AssessmentsNewRoute
-  RequirementsRequirementIdRoute: typeof RequirementsRequirementIdRoute
+  AssessmentsIndexRoute: typeof AssessmentsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -338,32 +178,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/approvals': {
-      id: '/approvals'
-      path: '/approvals'
-      fullPath: '/approvals'
-      preLoaderRoute: typeof ApprovalsRouteImport
+    '/$': {
+      id: '/$'
+      path: '/$'
+      fullPath: '/$'
+      preLoaderRoute: typeof SplatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/evidence': {
-      id: '/evidence'
-      path: '/evidence'
-      fullPath: '/evidence'
-      preLoaderRoute: typeof EvidenceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/executive-summary': {
-      id: '/executive-summary'
-      path: '/executive-summary'
-      fullPath: '/executive-summary'
-      preLoaderRoute: typeof ExecutiveSummaryRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/explainability': {
-      id: '/explainability'
-      path: '/explainability'
-      fullPath: '/explainability'
-      preLoaderRoute: typeof ExplainabilityRouteImport
+    '/findings': {
+      id: '/findings'
+      path: '/findings'
+      fullPath: '/findings'
+      preLoaderRoute: typeof FindingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/frameworks': {
@@ -373,53 +199,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FrameworksRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/heatmap': {
-      id: '/heatmap'
-      path: '/heatmap'
-      fullPath: '/heatmap'
-      preLoaderRoute: typeof HeatmapRouteImport
+    '/future': {
+      id: '/future'
+      path: '/future'
+      fullPath: '/future'
+      preLoaderRoute: typeof FutureRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/mitigations': {
-      id: '/mitigations'
-      path: '/mitigations'
-      fullPath: '/mitigations'
-      preLoaderRoute: typeof MitigationsRouteImport
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/poc-metrics': {
-      id: '/poc-metrics'
-      path: '/poc-metrics'
-      fullPath: '/poc-metrics'
-      preLoaderRoute: typeof PocMetricsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/policies': {
-      id: '/policies'
-      path: '/policies'
-      fullPath: '/policies'
-      preLoaderRoute: typeof PoliciesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/risks': {
-      id: '/risks'
-      path: '/risks'
-      fullPath: '/risks'
-      preLoaderRoute: typeof RisksRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/stage-gate': {
-      id: '/stage-gate'
-      path: '/stage-gate'
-      fullPath: '/stage-gate'
-      preLoaderRoute: typeof StageGateRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/trace': {
-      id: '/trace'
-      path: '/trace'
-      fullPath: '/trace'
-      preLoaderRoute: typeof TraceRouteImport
+    '/assessments/': {
+      id: '/assessments/'
+      path: '/assessments'
+      fullPath: '/assessments/'
+      preLoaderRoute: typeof AssessmentsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/assessments/$assessmentId': {
@@ -450,55 +248,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FrameworksFrameworkIdRouteImport
       parentRoute: typeof FrameworksRoute
     }
-    '/policies/': {
-      id: '/policies/'
-      path: '/'
-      fullPath: '/policies/'
-      preLoaderRoute: typeof PoliciesIndexRouteImport
-      parentRoute: typeof PoliciesRoute
-    }
-    '/policies/$policyId': {
-      id: '/policies/$policyId'
-      path: '/$policyId'
-      fullPath: '/policies/$policyId'
-      preLoaderRoute: typeof PoliciesPolicyIdRouteImport
-      parentRoute: typeof PoliciesRoute
-    }
-    '/requirements/$requirementId': {
-      id: '/requirements/$requirementId'
-      path: '/requirements/$requirementId'
-      fullPath: '/requirements/$requirementId'
-      preLoaderRoute: typeof RequirementsRequirementIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/risks/': {
-      id: '/risks/'
-      path: '/'
-      fullPath: '/risks/'
-      preLoaderRoute: typeof RisksIndexRouteImport
-      parentRoute: typeof RisksRoute
-    }
-    '/risks/$riskId': {
-      id: '/risks/$riskId'
-      path: '/$riskId'
-      fullPath: '/risks/$riskId'
-      preLoaderRoute: typeof RisksRiskIdRouteImport
-      parentRoute: typeof RisksRoute
-    }
-    '/assessments/$assessmentId/': {
-      id: '/assessments/$assessmentId/'
-      path: '/'
-      fullPath: '/assessments/$assessmentId/'
-      preLoaderRoute: typeof AssessmentsAssessmentIdIndexRouteImport
-      parentRoute: typeof AssessmentsAssessmentIdRoute
-    }
-    '/assessments/$assessmentId/run': {
-      id: '/assessments/$assessmentId/run'
-      path: '/run'
-      fullPath: '/assessments/$assessmentId/run'
-      preLoaderRoute: typeof AssessmentsAssessmentIdRunRouteImport
-      parentRoute: typeof AssessmentsAssessmentIdRoute
-    }
   }
 }
 
@@ -516,65 +265,16 @@ const FrameworksRouteWithChildren = FrameworksRoute._addFileChildren(
   FrameworksRouteChildren,
 )
 
-interface PoliciesRouteChildren {
-  PoliciesPolicyIdRoute: typeof PoliciesPolicyIdRoute
-  PoliciesIndexRoute: typeof PoliciesIndexRoute
-}
-
-const PoliciesRouteChildren: PoliciesRouteChildren = {
-  PoliciesPolicyIdRoute: PoliciesPolicyIdRoute,
-  PoliciesIndexRoute: PoliciesIndexRoute,
-}
-
-const PoliciesRouteWithChildren = PoliciesRoute._addFileChildren(
-  PoliciesRouteChildren,
-)
-
-interface RisksRouteChildren {
-  RisksRiskIdRoute: typeof RisksRiskIdRoute
-  RisksIndexRoute: typeof RisksIndexRoute
-}
-
-const RisksRouteChildren: RisksRouteChildren = {
-  RisksRiskIdRoute: RisksRiskIdRoute,
-  RisksIndexRoute: RisksIndexRoute,
-}
-
-const RisksRouteWithChildren = RisksRoute._addFileChildren(RisksRouteChildren)
-
-interface AssessmentsAssessmentIdRouteChildren {
-  AssessmentsAssessmentIdRunRoute: typeof AssessmentsAssessmentIdRunRoute
-  AssessmentsAssessmentIdIndexRoute: typeof AssessmentsAssessmentIdIndexRoute
-}
-
-const AssessmentsAssessmentIdRouteChildren: AssessmentsAssessmentIdRouteChildren =
-  {
-    AssessmentsAssessmentIdRunRoute: AssessmentsAssessmentIdRunRoute,
-    AssessmentsAssessmentIdIndexRoute: AssessmentsAssessmentIdIndexRoute,
-  }
-
-const AssessmentsAssessmentIdRouteWithChildren =
-  AssessmentsAssessmentIdRoute._addFileChildren(
-    AssessmentsAssessmentIdRouteChildren,
-  )
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  ApprovalsRoute: ApprovalsRoute,
-  EvidenceRoute: EvidenceRoute,
-  ExecutiveSummaryRoute: ExecutiveSummaryRoute,
-  ExplainabilityRoute: ExplainabilityRoute,
+  SplatRoute: SplatRoute,
+  FindingsRoute: FindingsRoute,
   FrameworksRoute: FrameworksRouteWithChildren,
-  HeatmapRoute: HeatmapRoute,
-  MitigationsRoute: MitigationsRoute,
-  PocMetricsRoute: PocMetricsRoute,
-  PoliciesRoute: PoliciesRouteWithChildren,
-  RisksRoute: RisksRouteWithChildren,
-  StageGateRoute: StageGateRoute,
-  TraceRoute: TraceRoute,
-  AssessmentsAssessmentIdRoute: AssessmentsAssessmentIdRouteWithChildren,
+  FutureRoute: FutureRoute,
+  SettingsRoute: SettingsRoute,
+  AssessmentsAssessmentIdRoute: AssessmentsAssessmentIdRoute,
   AssessmentsNewRoute: AssessmentsNewRoute,
-  RequirementsRequirementIdRoute: RequirementsRequirementIdRoute,
+  AssessmentsIndexRoute: AssessmentsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -1,0 +1,65 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /MediaBox [0 0 595 842] /Contents 4 0 R /Resources << /Font << /F1 5 0 R >> >> >>
+endobj
+4 0 obj
+<< /Length 1051 >>
+stream
+BT
+/F1 16 Tf
+50 790 Td
+(SCADA Migration - Architecture & Governance Assessment Input Report) Tj
+0 -20 Td
+/F1 10 Tf
+(Programme: SCADA Migration  |  Project: Smart Grid Modernisation) Tj
+0 -20 Td
+(Project Manager: Mohit M Makhija  |  Sponsor: Siobhan Edgar) Tj
+0 -20 Td
+() Tj
+0 -20 Td
+(POC DEMO DOCUMENT - sample input report for the NGET AI Governance) Tj
+0 -20 Td
+(Assurance concept demonstrator. Contents are illustrative only.) Tj
+0 -20 Td
+() Tj
+0 -20 Td
+(1. Architecture summary: SCADA migration target architecture, hosting,) Tj
+0 -20 Td
+(   integration patterns and technology standards alignment.) Tj
+0 -20 Td
+(2. Governance inputs: applicable architecture governance policies,) Tj
+0 -20 Td
+(   design authorities, and approval checkpoints.) Tj
+0 -20 Td
+(3. Security & resilience: security design response, NFR alignment and) Tj
+0 -20 Td
+(   disaster recovery approach for the migrated SCADA estate.) Tj
+0 -20 Td
+(4. Assessment scope: NGET Architecture Governance Framework policies) Tj
+0 -20 Td
+(   AGP-001, SDP-002, TSP-003 and IAP-004.) Tj
+ET
+endstream
+endobj
+5 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+xref
+0 6
+0000000000 65535 f 
+0000000009 00000 n 
+0000000058 00000 n 
+0000000115 00000 n 
+0000000241 00000 n 
+0000001344 00000 n 
+trailer
+<< /Size 6 /Root 1 0 R >>
+startxref
+1414
+%%EOF
