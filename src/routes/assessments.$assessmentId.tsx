@@ -1,7 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FileArchive, FileSpreadsheet, FileText } from "lucide-react";
+import { FileArchive, FileSpreadsheet, FileText, PencilLine } from "lucide-react";
 import { PageHeader } from "@/components/page-header";
-import { DemoBadge, SeverityBadge, StatusBadge, VerdictBadge } from "@/components/status";
+import { DemoBadge, NotAssessedBadge, SeverityBadge, StatusBadge, VerdictBadge } from "@/components/status";
 import { getFramework } from "@/lib/mock/frameworks";
 import { resultForAssessment } from "@/lib/mock/profiles";
 import type { ArtefactKind } from "@/lib/mock/types";
@@ -58,8 +58,85 @@ function AssessmentDetailPage() {
     );
   }
 
-  const framework = getFramework(assessment.frameworkId);
+  const framework = assessment.frameworkId
+    ? getFramework(assessment.frameworkId)
+    : undefined;
   const result = resultForAssessment(assessment);
+
+  const contextLine =
+    assessment.projectName || assessment.programme
+      ? `${assessment.projectName || "—"} · ${assessment.programme || "—"}.`
+      : "No project details entered yet.";
+
+  // Draft view — the record exists but has not been assessed, so there is no
+  // score, outcome or findings to show yet.
+  if (!result) {
+    return (
+      <div className="mx-auto max-w-[1000px]">
+        <PageHeader
+          breadcrumbs={[
+            { label: "Assessments", to: "/assessments" },
+            { label: assessment.ref },
+          ]}
+          title={`Governance Assessment — ${assessment.ref}`}
+          subtitle={`${contextLine} Draft — not yet assessed.`}
+          actions={
+            <>
+              <StatusBadge status={assessment.status} />
+              <DemoBadge />
+            </>
+          }
+        />
+
+        <div className="mb-6 rounded-xl border border-border bg-card p-8 text-center">
+          <NotAssessedBadge />
+          <h2 className="mt-3 text-lg font-semibold text-foreground">
+            This draft has not been assessed
+          </h2>
+          <p className="mx-auto mt-2 max-w-md text-sm text-muted-foreground">
+            Complete the setup — project details, framework and at least one
+            artefact — then run the simulated governance assessment to see a
+            score, outcome, findings and recommendations here.
+          </p>
+          <Link
+            to="/assessments/new"
+            search={{ ref: assessment.ref }}
+            className="mt-5 inline-flex items-center gap-1.5 rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:bg-primary/90"
+          >
+            <PencilLine className="size-4" /> Continue setup
+          </Link>
+        </div>
+
+        <div className="rounded-xl border border-border bg-card">
+          <div className="border-b border-border px-5 py-3">
+            <h2 className="text-sm font-semibold text-foreground">
+              Artefacts ({assessment.artefacts.length})
+            </h2>
+          </div>
+          {assessment.artefacts.length === 0 ? (
+            <p className="px-5 py-6 text-sm text-muted-foreground">
+              No artefacts uploaded yet.
+            </p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {assessment.artefacts.map((a) => (
+                <li key={a.id} className="flex items-center gap-3 px-5 py-2.5">
+                  {FILE_ICON[a.kind]}
+                  <span className="min-w-0 flex-1 truncate font-mono text-xs text-foreground">
+                    {a.name}
+                  </span>
+                  <span className="text-[11px] text-muted-foreground">
+                    {a.sizeMb} MB · {a.source === "demo" ? "POC demo data" : "browser session"}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   const highCount = result.findings.filter((f) => f.severity === "high").length;
 
   return (
@@ -70,7 +147,7 @@ function AssessmentDetailPage() {
           { label: assessment.ref },
         ]}
         title={`Governance Assessment — ${assessment.ref}`}
-        subtitle={`${assessment.projectName} · ${assessment.programme}. Simulated AI output — illustrative only.`}
+        subtitle={`${contextLine} Simulated AI output — illustrative only.`}
         actions={
           <>
             <StatusBadge status={assessment.status} />
