@@ -105,9 +105,9 @@ function AssessmentDetailPage() {
         <div className="grid grid-cols-3 gap-3 lg:col-span-2">
           {(
             [
-              ["Compliant", mockResult.compliant, "text-success", "bg-success/10 border-success/30"],
-              ["Partial", mockResult.partial, "text-warning-foreground", "bg-warning/15 border-warning/40"],
-              ["Gaps", mockResult.gaps, "text-destructive", "bg-destructive/10 border-destructive/30"],
+              ["Meets expectations", mockResult.compliant, "text-success", "bg-success/10 border-success/30"],
+              ["Needs attention", mockResult.partial, "text-warning-foreground", "bg-warning/15 border-warning/40"],
+              ["Gap identified", mockResult.gaps, "text-destructive", "bg-destructive/10 border-destructive/30"],
             ] as const
           ).map(([label, value, text, box]) => (
             <div

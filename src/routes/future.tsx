@@ -33,18 +33,18 @@ export const Route = createFileRoute("/future")({
 const ITEMS = [
   {
     icon: <FileSearch className="size-5 text-primary" />,
-    title: "Evidence-level Traceability",
+    title: "Evidence-Level Traceability",
     text: "Link every finding back to the exact document, page and paragraph that supports it, so reviewers can verify AI conclusions against source evidence.",
-  },
-  {
-    icon: <BarChart3 className="size-5 text-primary" />,
-    title: "Advanced Risk & Governance Analytics",
-    text: "Portfolio-level dashboards showing compliance trends, recurring gap themes and risk concentration across programmes and frameworks.",
   },
   {
     icon: <Flag className="size-5 text-primary" />,
     title: "Stage Gate Integration",
     text: "Feed assessment results directly into stage-gate decisions, with readiness criteria and conditional-pass actions tracked to closure.",
+  },
+  {
+    icon: <BarChart3 className="size-5 text-primary" />,
+    title: "Advanced Risk Analytics",
+    text: "Portfolio-level dashboards showing compliance trends, recurring gap themes and risk concentration across programmes and frameworks.",
   },
   {
     icon: <GitBranch className="size-5 text-primary" />,
