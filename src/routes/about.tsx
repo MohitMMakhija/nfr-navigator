@@ -11,13 +11,13 @@ import { DemoBadge } from "@/components/status";
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About the POC — Automated Governance Artifacts Review System" },
+      { title: "About the POC — Artifact Insight Assistant" },
       {
         name: "description",
         content:
-          "What the Automated Governance Artifacts Review System concept POC demonstrates, how it works, and its current scope. POC demo with simulated AI.",
+          "What the Artifact Insight Assistant concept POC demonstrates, how it works, and its current scope. POC demo with simulated AI.",
       },
-      { property: "og:title", content: "About the POC — Automated Governance Artifacts Review System" },
+      { property: "og:title", content: "About the POC — Artifact Insight Assistant" },
       {
         property: "og:description",
         content:
@@ -70,7 +70,7 @@ function AboutPage() {
       <section className="mb-8">
         <h2 className="text-sm font-semibold text-foreground">What is this?</h2>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          Automated Governance Artifacts Review System is a concept demonstrator for AI-assisted
+          Artifact Insight Assistant is a concept demonstrator for AI-assisted
           project governance assessment: upload project artefacts, select a
           framework, and see simulated AI findings and recommendations. All AI
           behaviour in this POC is simulated and clearly labelled — no real AI,

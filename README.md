@@ -1,4 +1,4 @@
-# AI Governance Hub
+# Artifact Insight Assistant
 
 Build the requested high-fidelity, executive-ready clickable POC: “NGET AI Governance Assurance” with the subtitle “AI-Assisted Project Governance, Compliance & Risk Assessment.” Use the attached NFR workbook as the source to seed realistic mock NFR policy requirements, but do not expose the workbook itself. This is strictly a static/mock UX prototype: no real AI, APIs, document parsing, OCR, integrations, authentication, or secrets. Make simulated AI clearly labeled POC DEMO MODE and show a small demo reset action.
 

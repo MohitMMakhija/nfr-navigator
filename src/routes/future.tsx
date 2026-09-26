@@ -16,12 +16,12 @@ import { PageHeader } from "@/components/page-header";
 export const Route = createFileRoute("/future")({
   head: () => ({
     meta: [
-      { title: "Future Enhancements — Automated Governance Artifacts Review System POC" },
+      { title: "Future Enhancements — Artifact Insight Assistant POC" },
       {
         name: "description",
         content: "Roadmap of possible future capabilities for the governance assurance concept. Not implemented in this POC.",
       },
-      { property: "og:title", content: "Future Enhancements — Automated Governance Artifacts Review System POC" },
+      { property: "og:title", content: "Future Enhancements — Artifact Insight Assistant POC" },
       {
         property: "og:description",
         content: "Possible future capabilities — not implemented in this POC.",

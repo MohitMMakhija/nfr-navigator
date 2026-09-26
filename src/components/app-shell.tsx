@@ -86,7 +86,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex items-center gap-2 md:hidden">
           <ShieldCheck className="size-5 shrink-0 text-primary" />
           <span className="truncate text-xs font-semibold">
-            Automated Governance Artifacts Review System
+            Artifact Insight Assistant
           </span>
         </div>
         <div className="hidden items-center gap-2 text-xs text-muted-foreground md:flex">
