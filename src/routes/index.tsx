@@ -61,7 +61,7 @@ function DashboardPage() {
     <div className="mx-auto max-w-[1100px]">
       <PageHeader
         title="Governance Assurance Dashboard"
-        subtitle="Overview of governance assessments and areas requiring attention."
+        subtitle="AI-powered insights to accelerate architecture and governance artifact reviews."
         actions={
           <>
             <DemoBadge />

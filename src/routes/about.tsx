@@ -70,11 +70,13 @@ function AboutPage() {
       <section className="mb-8">
         <h2 className="text-sm font-semibold text-foreground">What is this?</h2>
         <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-          Artifact Insight Assistant is a concept demonstrator for AI-assisted
-          project governance assessment: upload project artefacts, select a
-          framework, and see simulated AI findings and recommendations. All AI
-          behaviour in this POC is simulated and clearly labelled — no real AI,
-          backend, or document processing takes place.
+          Artifact Insight Assistant is an AI-powered assistant that analyses
+          architecture and governance artifacts against relevant standards,
+          policies and controls, identifies potential gaps and risks, and
+          provides contextual insights to support architects and accelerate the
+          SDA process. It does not replace the architect's assessment or
+          decision-making. All AI behaviour in this POC is simulated and clearly
+          labelled — no real AI, backend, or document processing takes place.
         </p>
       </section>
 
