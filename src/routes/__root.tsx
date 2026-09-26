@@ -80,17 +80,17 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Automated Governance Artifacts Review System — Concept POC" },
+      { title: "Artifact Insight Assistant — Concept POC" },
       {
         name: "description",
         content:
-          "AI-assisted governance assessment for project artefacts. Concept POC with simulated AI: upload artefacts, select a framework, review findings and recommendations.",
+          "AI-powered insights to accelerate architecture and governance artifact reviews. Concept POC with simulated AI.",
       },
-      { property: "og:title", content: "Automated Governance Artifacts Review System — Concept POC" },
+      { property: "og:title", content: "Artifact Insight Assistant — Concept POC" },
       {
         property: "og:description",
         content:
-          "Upload artefacts → select framework → simulated AI assessment → findings & recommendations. POC demo.",
+          "AI-powered insights to accelerate architecture and governance artifact reviews. POC demo.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

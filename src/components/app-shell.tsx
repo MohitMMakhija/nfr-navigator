@@ -46,10 +46,10 @@ export function AppShell({ children }: { children: ReactNode }) {
           </div>
           <div className="leading-tight">
             <div className="text-sm font-semibold text-foreground">
-              Automated Governance
+              Artifact Insight
             </div>
             <div className="text-sm font-semibold text-foreground">
-              Artifacts Review System
+              Assistant
             </div>
             <div className="mt-0.5 text-[11px] text-muted-foreground">
               Concept POC · Simulated AI
@@ -75,7 +75,7 @@ export function AppShell({ children }: { children: ReactNode }) {
 
         <div className="border-t border-sidebar-border px-5 py-4">
           <p className="text-[10px] leading-relaxed text-muted-foreground">
-            Concept demonstrator. All AI behaviour is simulated and labelled. No
+            AI-assisted artifact review. Supports, never replaces, the architect's assessment. All AI behaviour is simulated. No
             data leaves this browser.
           </p>
         </div>
@@ -86,7 +86,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         <div className="flex items-center gap-2 md:hidden">
           <ShieldCheck className="size-5 shrink-0 text-primary" />
           <span className="truncate text-xs font-semibold">
-            Automated Governance Artifacts Review System
+            Artifact Insight Assistant
           </span>
         </div>
         <div className="hidden items-center gap-2 text-xs text-muted-foreground md:flex">

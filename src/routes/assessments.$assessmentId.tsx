@@ -10,12 +10,12 @@ import { useDemo } from "@/lib/store";
 export const Route = createFileRoute("/assessments/$assessmentId")({
   head: () => ({
     meta: [
-      { title: "Assessment Results — Automated Governance Artifacts Review System POC" },
+      { title: "Assessment Results — Artifact Insight Assistant POC" },
       {
         name: "description",
         content: "Simulated governance assessment result: overall score, findings and recommendations. POC demo mode.",
       },
-      { property: "og:title", content: "Assessment Results — Automated Governance Artifacts Review System POC" },
+      { property: "og:title", content: "Assessment Results — Artifact Insight Assistant POC" },
       { property: "og:description", content: "Simulated governance assessment result. POC demo mode." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

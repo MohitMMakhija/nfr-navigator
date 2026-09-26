@@ -9,13 +9,13 @@ import { useDemo } from "@/lib/store";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Governance Assurance Dashboard — Automated Governance Artifacts Review System" },
+      { title: "Governance Assurance Dashboard — Artifact Insight Assistant" },
       {
         name: "description",
         content:
-          "Governance assurance dashboard for the Automated Governance Artifacts Review System concept POC: portfolio metrics, outcomes and simulated assessments.",
+          "Governance assurance dashboard for the Artifact Insight Assistant concept POC: portfolio metrics, outcomes and simulated assessments.",
       },
-      { property: "og:title", content: "Governance Assurance Dashboard — Automated Governance Artifacts Review System" },
+      { property: "og:title", content: "Governance Assurance Dashboard — Artifact Insight Assistant" },
       {
         property: "og:description",
         content:
@@ -61,7 +61,7 @@ function DashboardPage() {
     <div className="mx-auto max-w-[1100px]">
       <PageHeader
         title="Governance Assurance Dashboard"
-        subtitle="Overview of governance assessments and areas requiring attention."
+        subtitle="AI-powered insights to accelerate architecture and governance artifact reviews."
         actions={
           <>
             <DemoBadge />

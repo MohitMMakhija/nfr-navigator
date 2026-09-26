@@ -7,12 +7,12 @@ import { frameworks } from "@/lib/mock/frameworks";
 export const Route = createFileRoute("/frameworks/")({
   head: () => ({
     meta: [
-      { title: "Framework & Policy Library — Automated Governance Artifacts Review System POC" },
+      { title: "Framework & Policy Library — Artifact Insight Assistant POC" },
       {
         name: "description",
         content: "Governance frameworks and their applicable policies used by the POC demonstrator.",
       },
-      { property: "og:title", content: "Framework & Policy Library — Automated Governance Artifacts Review System POC" },
+      { property: "og:title", content: "Framework & Policy Library — Artifact Insight Assistant POC" },
       { property: "og:description", content: "Governance frameworks and applicable policies." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

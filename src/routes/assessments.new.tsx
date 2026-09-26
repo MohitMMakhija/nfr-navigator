@@ -30,13 +30,13 @@ export const Route = createFileRoute("/assessments/new")({
   },
   head: () => ({
     meta: [
-      { title: "New Governance Assessment — Automated Governance Artifacts Review System POC" },
+      { title: "New Governance Assessment — Artifact Insight Assistant POC" },
       {
         name: "description",
         content:
           "Configure and run a simulated governance assessment: project details, framework, artefacts, review & run. POC demo mode.",
       },
-      { property: "og:title", content: "New Governance Assessment — Automated Governance Artifacts Review System POC" },
+      { property: "og:title", content: "New Governance Assessment — Artifact Insight Assistant POC" },
       { property: "og:description", content: "Configure and run a simulated governance assessment." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
